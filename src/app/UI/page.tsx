@@ -2,6 +2,8 @@ import IconTest from "./IconTest";
 import ButtonTest from "./ButtonTest";
 import CardTest from "./CardWithForm";
 import CardWithNotification from "./CardWithNotification";
+import TableDemo from "./TableDemo";
+
 
 export default function UIPage() {
     return (
@@ -13,6 +15,8 @@ export default function UIPage() {
             <CardTest />
             <hr />
             <CardWithNotification />
+            <hr />
+            <TableDemo />
         </div>
     )
 }
