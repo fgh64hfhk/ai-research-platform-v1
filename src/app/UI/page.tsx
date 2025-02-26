@@ -5,6 +5,7 @@ import CardWithNotification from "./CardWithNotification";
 import TableDemo from "./TableDemo";
 import ChartTest from "./ChartTest";
 import ChartDemo from "./ChartDemo";
+import ProfileForm from "./ProfileForm";
 
 
 export default function UIPage() {
@@ -23,6 +24,8 @@ export default function UIPage() {
             <ChartTest />
             <hr />
             <ChartDemo />
+            <hr />
+            <ProfileForm />
         </div>
     )
 }
