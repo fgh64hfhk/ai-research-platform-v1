@@ -26,6 +26,21 @@ export type Payment = {
   date: string;
 };
 
+const getStatusColor = (status: string) => {
+  switch (status) {
+    case "pending":
+      return "bg-yellow-500 text-white";
+    case "processing":
+      return "bg-blue-500 text-white";
+    case "success":
+      return "bg-green-500 text-white";
+    case "failed":
+      return "bg-red-500 text-white";
+    default:
+      return "bg-gray-500 text-white";
+  }
+};
+
 export const columns: ColumnDef<Payment>[] = [
   {
     id: "select",
@@ -52,6 +67,14 @@ export const columns: ColumnDef<Payment>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.original.status;
+      return (
+        <Badge className={getStatusColor(status)}>
+          {status.charAt(0).toUpperCase() + status.slice(1)}
+        </Badge>
+      );
+    },
   },
   {
     accessorKey: "email",
@@ -86,6 +109,7 @@ export const columns: ColumnDef<Payment>[] = [
   },
   {
     id: "actions",
+    header: () => <div className="text-left">Actions</div>,
     cell: ({ row }) => {
       const payment = row.original;
 
