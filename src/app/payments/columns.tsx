@@ -41,6 +41,7 @@ export const columns: ColumnDef<Payment>[] = [
             </Button>
         )
     },
+    enableHiding: false,
   },
   {
     accessorKey: "amount",
