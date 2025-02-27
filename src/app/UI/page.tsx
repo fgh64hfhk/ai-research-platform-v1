@@ -6,6 +6,7 @@ import TableDemo from "./TableDemo";
 import ChartTest from "./ChartTest";
 import ChartDemo from "./ChartDemo";
 import ProfileForm from "./ProfileForm";
+import DialogDemo from "./DialogDemo";
 
 
 export default function UIPage() {
@@ -26,6 +27,8 @@ export default function UIPage() {
             <ChartDemo />
             <hr />
             <ProfileForm />
+            <hr />
+            <DialogDemo />
         </div>
     )
 }
