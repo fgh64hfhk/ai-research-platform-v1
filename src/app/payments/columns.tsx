@@ -12,6 +12,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
+import { Badge } from "@/components/ui/badge";
+import { Checkbox } from "@/components/ui/checkbox";
+
 // This tpe is ued to define the shape of out data.
 // You can use Zod schema here if you want to validate the data.
 
@@ -25,21 +28,43 @@ export type Payment = {
 
 export const columns: ColumnDef<Payment>[] = [
   {
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },
+  {
     accessorKey: "status",
     header: "Status",
   },
   {
     accessorKey: "email",
     header: ({ column }) => {
-        return (
-            <Button
-                variant="ghost"
-                onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                Email
-                <ArrowUpDown />
-            </Button>
-        )
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Email
+          <ArrowUpDown />
+        </Button>
+      );
     },
     enableHiding: false,
   },
@@ -86,5 +111,6 @@ export const columns: ColumnDef<Payment>[] = [
         </DropdownMenu>
       );
     },
+    enableHiding: false,
   },
 ];
