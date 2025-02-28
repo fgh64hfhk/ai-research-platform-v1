@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "next-themes";
 
+// 主題模式的供應器中設置 延遲伺服器端的渲染 並提供未掛載的狀態 注意不要重複渲染
+
 export default function Provider({ children }: { children: React.ReactNode }) {
   const [mounted, setMounted] = useState(false);
 
