@@ -7,6 +7,8 @@ import ChartTest from "./ChartTest";
 import ChartDemo from "./ChartDemo";
 import ProfileForm from "./ProfileForm";
 import DialogDemo from "./DialogDemo";
+import SonnerDemo from "./SonnerDemo";
+import SonnerToast from "./SonnerToast";
 
 
 export default function UIPage() {
@@ -29,6 +31,10 @@ export default function UIPage() {
             <ProfileForm />
             <hr />
             <DialogDemo />
+            <hr />
+            <SonnerDemo />
+            <hr />
+            <SonnerToast />
         </div>
     )
 }
