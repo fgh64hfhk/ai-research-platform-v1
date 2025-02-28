@@ -47,6 +47,8 @@ function Toast({ id, title, description, type, button }: ToastProps) {
     default: <Info className="text-gray-500 w-5 h-5" />,
   };
 
+  // 需要檢查傳入的參數是否為 undefined，因為 undefined 不能作為物件的索引值
+
   return (
     <div className="flex items-center w-full max-w-sm md:max-w-[400px] p-4 rounded-lg shadow-lg bg-white ring-1 ring-black/5">
       <div className="mr-3">{iconMap[type || "default"]}</div>
