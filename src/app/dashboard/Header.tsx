@@ -15,12 +15,15 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 
+import { SidebarTrigger } from "@/components/ui/sidebar";
+
 import ModeToggle from "./ModeToggle";
 
 export default function Header() {
   return (
     <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between px-6 bg-white dark:bg-gray-900 shadow-md">
       <div className="flex items-center gap-3">
+        <SidebarTrigger />
         <Activity className="w-6 h-6 text-gray-700 dark:text-gray-300" />
         <span className="text-xl font-bold text-gray-800 dark:text-white">
           AI 研究平台
