@@ -3,6 +3,7 @@
 import LossChart from "@/app/dashboard/LossChart";
 import AccuracyTrendChart from "./AccuracyTrendChart";
 import PredictionPieChart from "./PredictionPieChart";
+import { Component } from "./InteractivePieChart";
 
 export default function Dashboard() {
   return (
@@ -21,6 +22,8 @@ export default function Dashboard() {
         <AccuracyTrendChart />
         <hr />
         <PredictionPieChart />
+        <hr />
+        <Component />
       </div>
     </div>
   );
