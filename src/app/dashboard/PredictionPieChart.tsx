@@ -29,7 +29,6 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { arch } from "os";
 
 // 模擬數據：包含不同版本的準確率
 // const modelData = {
@@ -209,40 +208,41 @@ export default function PredictionPieChart() {
         </Select>
       </CardHeader>
 
-      <CardContent className="flex-1 pb-0">
-        <Select defaultValue={active} onValueChange={setActive}>
-          <SelectTrigger
-            className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
-            aria-label="Select Category"
-          >
-            <SelectValue placeholder="Select Category" />
-          </SelectTrigger>
-          <SelectContent align="end" className="rounded-xl">
-            {status.map((key) => {
-              const config = chartConfig[key as keyof typeof chartConfig];
-              console.log("config:", config);
-              if (!config) return null;
-              return (
-                <SelectItem
-                  key={key}
-                  value={key}
-                  className="rounded-lg [&_span]:flex"
-                >
-                  <div className="flex items-center gap-2 text-xs">
-                    <span
-                      className="flex h-3 w-3 shrink-0 rounded-sm"
-                      style={{
-                        background: `var(--color-${key})`,
-                      }}
-                    />
-                    {config?.label}
-                  </div>
-                </SelectItem>
-              );
-            })}
-          </SelectContent>
-        </Select>
-
+      <CardContent className="flex-row items-start space-y-0 pb-0">
+        <div className="grid gap-1">
+          <Select defaultValue={active} onValueChange={setActive}>
+            <SelectTrigger
+              className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
+              aria-label="Select Category"
+            >
+              <SelectValue placeholder="Select Category" />
+            </SelectTrigger>
+            <SelectContent align="end" className="rounded-xl">
+              {status.map((key) => {
+                const config = chartConfig[key as keyof typeof chartConfig];
+                console.log("config:", config);
+                if (!config) return null;
+                return (
+                  <SelectItem
+                    key={key}
+                    value={key}
+                    className="rounded-lg [&_span]:flex"
+                  >
+                    <div className="flex items-center gap-2 text-xs">
+                      <span
+                        className="flex h-3 w-3 shrink-0 rounded-sm"
+                        style={{
+                          background: `var(--color-${key})`,
+                        }}
+                      />
+                      {config?.label}
+                    </div>
+                  </SelectItem>
+                );
+              })}
+            </SelectContent>
+          </Select>
+        </div>
         {/* Pie Chart Division */}
         <ChartContainer
           id={id}

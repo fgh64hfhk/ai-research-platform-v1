@@ -1,21 +1,21 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { ThemeProvider } from "next-themes";
+import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 // 主題模式的供應器中設置 延遲伺服器端的渲染 並提供未掛載的狀態 注意不要重複渲染
 
-export default function Provider({ children }: { children: React.ReactNode }) {
+export function ThemeProvider({
+  children,
+  ...props
+}: React.ComponentProps<typeof NextThemesProvider>) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  if (!mounted)
-    return (
-      <div className="w-10 h-10 bg-gray-200 dark:bg-gray-800 rounded-lg animate-pulse" />
-    );
+  if (!mounted) return <div>未掛載組件</div>;
 
-  return <ThemeProvider attribute="class">{children}</ThemeProvider>;
+  return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }

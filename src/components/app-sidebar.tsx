@@ -43,7 +43,7 @@ const menuItems = [
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="flex-shrink-0">
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>

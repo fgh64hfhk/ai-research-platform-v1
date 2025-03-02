@@ -21,7 +21,8 @@ import ModeToggle from "./ModeToggle";
 
 export default function Header() {
   return (
-    <header className="fixed top-0 left-0 w-full h-16 flex items-center justify-between px-6 bg-white dark:bg-gray-900 shadow-md">
+    <header className="sticky top-0 w-full z-10 bg-white dark:bg-gray-900 shadow-md flex items-center justify-between px-6 h-16">
+      {/* 側邊欄按鈕 + 平台名稱 */}
       <div className="flex items-center gap-3">
         <SidebarTrigger />
         <Activity className="w-6 h-6 text-gray-700 dark:text-gray-300" />
@@ -30,7 +31,9 @@ export default function Header() {
         </span>
       </div>
 
-      <div className="flex items-center justify-center gap-3">
+      {/* 通知、使用者選單、暗黑模式切換 */}
+      <div className="flex items-center gap-3">
+        {/* 使用者選單 */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Avatar className="cursor-pointer w-8 h-8 hover:w-10 hover:h-10 transition-all duration-200">
@@ -46,10 +49,13 @@ export default function Header() {
               個人設定
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => console.log("登出")}>登出</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => console.log("登出")}>
+              登出
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
+        {/* 通知按鈕 */}
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" className="relative">
@@ -61,6 +67,8 @@ export default function Header() {
             <p className="text-sm text-gray-500">目前沒有新的通知</p>
           </PopoverContent>
         </Popover>
+
+        {/* 暗黑模式切換 */}
         <ModeToggle />
       </div>
     </header>

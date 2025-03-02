@@ -2,30 +2,38 @@
 
 import { ReactNode } from "react";
 
-import Provider from "@/components/theme-provider";
+import { ThemeProvider } from "@/components/theme-provider";
+
 import Header from "./Header";
 
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
+function DashboardLayout({ children }: { children: ReactNode }) {
+  return (
+    <div className="flex h-screen w-full">
+      {/* Sidebar 固定左側 */}
+      <AppSidebar />
+
+      <div className="flex flex-col flex-1">
+        {/* Header 固定上方 */}
+        <Header />
+
+        {/* 主要內容區域 */}
+        <main className="flex-1 overflow-hidden">
+          <div className="overflow-auto h-full p-4">{children}</div>
+        </main>
+      </div>
+    </div>
+  );
+}
+
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <Provider>
+    <ThemeProvider attribute="class" defaultTheme="system">
       <SidebarProvider>
-        <div className="flex h-screen">
-          {/* Sidebar 固定左側 */}
-          <AppSidebar />
-
-          {/* Main content area */}
-          <div className="flex flex-col flex-1">
-            {/* 頭部導航欄 固定在上方 */}
-            <Header />
-
-            {/* Main content with overflow handling */}
-            <main className="flex-1 overflow-auto p-6 mt-16">{children}</main>
-          </div>
-        </div>
+        <DashboardLayout>{children}</DashboardLayout>
       </SidebarProvider>
-    </Provider>
+    </ThemeProvider>
   );
 }
