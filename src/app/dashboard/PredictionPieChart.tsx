@@ -31,20 +31,24 @@ import {
 } from "@/components/ui/chart";
 
 // 模擬數據：包含不同版本的準確率
-// const modelData = {
-//   modelA: {
-//     v1_0: { accuracy: 48.5, total: 10600 },
-//     v1_1: { accuracy: 43.3, total: 17500 },
-//     v2_0: { accuracy: 32.7, total: 12000 },
-//     v2_1: { accuracy: 22.2, total: 15000 },
-//   },
-//   modelB: {
-//     v1_0: { accuracy: 76.2, total: 10700 },
-//     v1_1: { accuracy: 79.8, total: 23500 },
-//     v2_0: { accuracy: 84.1, total: 12800 },
-//     v2_1: { accuracy: 86.5, total: 15000 },
-//   },
-// };
+const modelData = {
+  modelA: {
+    v1_0: { accuracy: 48.5, total: 10600 },
+    v1_1: { accuracy: 43.3, total: 17500 },
+    v2_0: { accuracy: 32.7, total: 12000 },
+    v2_1: { accuracy: 22.2, total: 15000 },
+  },
+  modelB: {
+    v1_0: { accuracy: 76.2, total: 10700 },
+    v1_1: { accuracy: 79.8, total: 23500 },
+    v2_0: { accuracy: 84.1, total: 12800 },
+    v2_1: { accuracy: 86.5, total: 15000 },
+  },
+};
+
+// 錯誤率 (比例)
+const falsePositiveRate = 0.3;
+const falseNegativeRate = 0.5;
 
 // 圖表顏色
 const COLORS = {
@@ -79,94 +83,86 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-const pieData = [
-  {
-    name: "accuracy",
-    value: 100,
-    fill: "var(--color-accuracy)",
-  },
-  {
-    name: "failure",
-    value: 55,
-    fill: "var(--color-failure)",
-  },
-];
-
-// 錯誤細分類 (當選擇錯誤預測時才會顯示)
-const errorBreakdown = {
-  failure: [
-    { name: "False Positives", value: 25, fill: COLORS.falsePositive },
-    { name: "False Negatives", value: 20, fill: COLORS.falseNegative },
-    { name: "Uncertain Predictions", value: 10, fill: COLORS.uncertain },
-  ],
-};
-
 export default function PredictionPieChart() {
   const [selectedModel, setSelectedModel] = useState("modelA");
   const [selectedVersion, setSelectedVersion] = useState("v1_0");
 
-  // // 取得選擇的模型數據
-  // const { accuracy, total } = modelData[selectedModel][selectedVersion];
+  // 取得選擇的模型數據
+  const { accuracy, total } =
+    modelData[selectedModel as keyof typeof modelData][
+      selectedVersion as keyof (typeof modelData)[keyof typeof modelData]
+    ];
 
-  // // 計算正確與錯誤預測的數量
-  // const correctPredictions = Math.round((accuracy / 100) * total);
-  // const incorrectPredictions = total - correctPredictions;
+  // 計算正確與錯誤預測的數量
+  const correctPredictions = Math.round((accuracy / 100) * total);
+  const incorrectPredictions = total - correctPredictions;
 
-  // // 讓錯誤預設進一步區分
-  // const falsePositiveRate = 0.3;
-  // const falseNegativeRate = 0.5;
-  // const uncertainRate = 0.2;
+  // 細分錯誤預測
 
-  // const falsePositives = Math.round(incorrectPredictions * falsePositiveRate);
-  // const falseNegatives = Math.round(incorrectPredictions * falseNegativeRate);
-  // const uncertainPredictions =
-  //   incorrectPredictions - (falsePositives + falseNegatives);
+  const falsePositives = Math.round(incorrectPredictions * falsePositiveRate);
+  const falseNegatives = Math.round(incorrectPredictions * falseNegativeRate);
+  const uncertainPredictions =
+    incorrectPredictions - (falsePositives + falseNegatives);
 
-  // // Pie Chart 數據
-  // const pieData = [
-  //   {
-  //     name: "Correct Predictions",
-  //     value: correctPredictions,
-  //     fill: "var(--color-accuracy)",
-  //   },
-  //   {
-  //     name: "Incorrect Predictions",
-  //     value: incorrectPredictions,
-  //     fill: "var(--color-failure)",
-  //   },
-  //   {
-  //     name: "False Positives",
-  //     value: falsePositives,
-  //     fill: "var(--color-fail_pos)",
-  //   },
-  //   {
-  //     name: "False Negatives",
-  //     value: falseNegatives,
-  //     fill: "var(--color-fail_nag)",
-  //   },
-  //   {
-  //     name: "Uncertain Predictions",
-  //     value: uncertainPredictions,
-  //     fill: "var(--color-fail_unc)",
-  //   },
-  // ];
+  // 動態 Pie Chart 數據
+  const pieData = useMemo(
+    () => [
+      {
+        name: "accuracy",
+        value: correctPredictions,
+        fill: "var(--color-accuracy)",
+      },
+      {
+        name: "failure",
+        value: incorrectPredictions,
+        fill: "var(--color-failure)",
+      },
+    ],
+    [correctPredictions, incorrectPredictions]
+  );
+
+  // 錯誤細分類
+  const errorBreakdown = useMemo(
+    () => ({
+      failure: [
+        {
+          name: "False Positives",
+          value: falsePositives,
+          fill: "var(--color-fail_pos)",
+        },
+        {
+          name: "False Negatives",
+          value: falseNegatives,
+          fill: "var(--color-fail_nag)",
+        },
+        {
+          name: "Uncertain Predictions",
+          value: uncertainPredictions,
+          fill: "var(--color-fail_unc)",
+        },
+      ],
+    }),
+    [falsePositives, falseNegatives, uncertainPredictions]
+  );
 
   const id = "pie-interactive";
+
+  // 高亮選擇的區塊
   const [active, setActive] = useState(pieData[0].name);
 
   // 取得當前選擇的索引
   const activeIndex = useMemo(
     () => pieData.findIndex((item) => item.name === active),
-    [active]
+    [active, pieData]
   );
 
   // 取得所有狀態的陣列
-  const status = useMemo(() => pieData.map((item) => item.name), []);
+  const status = useMemo(() => pieData.map((item) => item.name), [pieData]);
 
   // 取得當前錯誤細分類別
   const activeErrorData = useMemo(
     () => (active === "failure" ? errorBreakdown["failure"] : []),
-    [active]
+    [active, errorBreakdown]
   );
 
   return (
@@ -178,11 +174,9 @@ export default function PredictionPieChart() {
         <CardDescription>
           Select a model and version to view accuracy distribution.
         </CardDescription>
-        {/* Dropdown Model Selected */}
-        <Select
-          onValueChange={(value) => setSelectedModel(value)}
-          defaultValue={selectedModel}
-        >
+
+        {/* 模型選擇 */}
+        <Select onValueChange={setSelectedModel} defaultValue={selectedModel}>
           <SelectTrigger className="w-48">
             <SelectValue placeholder="Select Model" />
           </SelectTrigger>
@@ -191,9 +185,10 @@ export default function PredictionPieChart() {
             <SelectItem value="modelB">Model B</SelectItem>
           </SelectContent>
         </Select>
-        {/* Dropdown Version Selected */}
+
+        {/* 版本選擇 */}
         <Select
-          onValueChange={(value) => setSelectedVersion(value)}
+          onValueChange={setSelectedVersion}
           defaultValue={selectedVersion}
         >
           <SelectTrigger className="w-48">
@@ -208,11 +203,12 @@ export default function PredictionPieChart() {
         </Select>
       </CardHeader>
 
-      <CardContent className="flex-row items-start space-y-0 pb-0">
-        <div className="grid gap-1">
+      <CardContent className="relative flex flex-col items-center space-y-0 pb-0">
+        {/* 選擇高亮圖表的類別 - 固定於右上角 */}
+        <div className="absolute top-0 right-0 mt-2 mr-4">
           <Select defaultValue={active} onValueChange={setActive}>
             <SelectTrigger
-              className="ml-auto h-7 w-[130px] rounded-lg pl-2.5"
+              className="h-7 w-[130px] rounded-lg pl-2.5"
               aria-label="Select Category"
             >
               <SelectValue placeholder="Select Category" />
@@ -220,7 +216,6 @@ export default function PredictionPieChart() {
             <SelectContent align="end" className="rounded-xl">
               {status.map((key) => {
                 const config = chartConfig[key as keyof typeof chartConfig];
-                console.log("config:", config);
                 if (!config) return null;
                 return (
                   <SelectItem
@@ -243,11 +238,12 @@ export default function PredictionPieChart() {
             </SelectContent>
           </Select>
         </div>
-        {/* Pie Chart Division */}
+
+        {/* 圓餅圖 - 保持置中 */}
         <ChartContainer
           id={id}
           config={chartConfig}
-          className="mx-auto aspect-square w-full max-h-[300px]"
+          className="mx-auto aspect-square w-full max-w-sm min-w-[200px] max-h-[300px]"
         >
           <PieChart>
             <ChartTooltip
@@ -266,19 +262,25 @@ export default function PredictionPieChart() {
                 outerRadius = 0,
                 ...props
               }: PieSectorDataItem) => {
-                // 若選擇的是錯誤預設，則細分該區塊
+                // 確保 `startAngle` 和 `endAngle` 存在
+                const startAngle = props.startAngle ?? 0;
+                const endAngle = props.endAngle ?? 0;
+
+                // 避免計算錯誤
+                if (startAngle === endAngle) return <g />; // 改為空 `<g />`，不回傳 `null`
+
+                const totalAngle = endAngle - startAngle;
+
+                // 如果選擇的是 "failure"，則細分該區塊
                 if (active === "failure") {
-                  let startAngle = props.startAngle;
-                  const totalAngle = props.endAngle - props.startAngle;
+                  const failureData = pieData.find(
+                    (item) => item.name === "failure"
+                  );
+                  const totalFailureValue = failureData?.value || 1; // 避免除數為 0
+
+                  let currentAngle = startAngle; // 獨立變數來儲存當前角度
 
                   const errorSectors = activeErrorData.map((item) => {
-                    const failureData = pieData.find(
-                      (item) => item.name === "failure"
-                    );
-                    const totalFailureValue = failureData
-                      ? failureData.value
-                      : 1; // 避免除數為 0
-
                     const arcAngle =
                       (item.value / totalFailureValue) * totalAngle;
                     const sector = (
@@ -286,13 +288,13 @@ export default function PredictionPieChart() {
                         {...props}
                         key={item.name}
                         fill={item.fill}
-                        startAngle={startAngle}
-                        endAngle={startAngle + arcAngle}
+                        startAngle={currentAngle}
+                        endAngle={currentAngle + arcAngle}
                         innerRadius={outerRadius + 15}
                         outerRadius={outerRadius + 30}
                       />
                     );
-                    startAngle += arcAngle;
+                    currentAngle += arcAngle; // 只影響本地變數，不影響 `props`
                     return sector;
                   });
                   return (

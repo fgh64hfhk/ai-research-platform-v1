@@ -34,38 +34,38 @@ const desktopData = [
 ];
 
 // 外圈細分數據 (假設每個月份有不同的訪問來源)
-const externalData = {
-  january: [
-    { name: "Direct", value: 50, fill: "#FF5722" },
-    { name: "Search", value: 80, fill: "#FFC107" },
-    { name: "Social Media", value: 30, fill: "#2196F3" },
-    { name: "Ads", value: 26, fill: "#4CAF50" },
-  ],
-  february: [
-    { name: "Direct", value: 80, fill: "#FF5722" },
-    { name: "Search", value: 120, fill: "#FFC107" },
-    { name: "Social Media", value: 50, fill: "#2196F3" },
-    { name: "Ads", value: 55, fill: "#4CAF50" },
-  ],
-  march: [
-    { name: "Direct", value: 70, fill: "#FF5722" },
-    { name: "Search", value: 90, fill: "#FFC107" },
-    { name: "Social Media", value: 40, fill: "#2196F3" },
-    { name: "Ads", value: 37, fill: "#4CAF50" },
-  ],
-  april: [
-    { name: "Direct", value: 40, fill: "#FF5722" },
-    { name: "Search", value: 60, fill: "#FFC107" },
-    { name: "Social Media", value: 40, fill: "#2196F3" },
-    { name: "Ads", value: 33, fill: "#4CAF50" },
-  ],
-  may: [
-    { name: "Direct", value: 60, fill: "#FF5722" },
-    { name: "Search", value: 90, fill: "#FFC107" },
-    { name: "Social Media", value: 40, fill: "#2196F3" },
-    { name: "Ads", value: 19, fill: "#4CAF50" },
-  ],
-};
+// const externalData = {
+//   january: [
+//     { name: "Direct", value: 50, fill: "#FF5722" },
+//     { name: "Search", value: 80, fill: "#FFC107" },
+//     { name: "Social Media", value: 30, fill: "#2196F3" },
+//     { name: "Ads", value: 26, fill: "#4CAF50" },
+//   ],
+//   february: [
+//     { name: "Direct", value: 80, fill: "#FF5722" },
+//     { name: "Search", value: 120, fill: "#FFC107" },
+//     { name: "Social Media", value: 50, fill: "#2196F3" },
+//     { name: "Ads", value: 55, fill: "#4CAF50" },
+//   ],
+//   march: [
+//     { name: "Direct", value: 70, fill: "#FF5722" },
+//     { name: "Search", value: 90, fill: "#FFC107" },
+//     { name: "Social Media", value: 40, fill: "#2196F3" },
+//     { name: "Ads", value: 37, fill: "#4CAF50" },
+//   ],
+//   april: [
+//     { name: "Direct", value: 40, fill: "#FF5722" },
+//     { name: "Search", value: 60, fill: "#FFC107" },
+//     { name: "Social Media", value: 40, fill: "#2196F3" },
+//     { name: "Ads", value: 33, fill: "#4CAF50" },
+//   ],
+//   may: [
+//     { name: "Direct", value: 60, fill: "#FF5722" },
+//     { name: "Search", value: 90, fill: "#FFC107" },
+//     { name: "Social Media", value: 40, fill: "#2196F3" },
+//     { name: "Ads", value: 19, fill: "#4CAF50" },
+//   ],
+// };
 
 const chartConfig = {
   visitors: {
