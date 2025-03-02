@@ -1,6 +1,8 @@
 "use client";
 
 import LossChart from "@/app/dashboard/LossChart";
+import AccuracyTrendChart from "./AccuracyTrendChart";
+import PredictionPieChart from "./PredictionPieChart";
 
 export default function Dashboard() {
   return (
@@ -15,6 +17,10 @@ export default function Dashboard() {
           訓練模型總覽
         </h2>
         <LossChart />
+        <hr />
+        <AccuracyTrendChart />
+        <hr />
+        <PredictionPieChart />
       </div>
     </div>
   );

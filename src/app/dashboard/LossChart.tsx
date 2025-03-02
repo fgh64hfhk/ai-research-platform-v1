@@ -62,6 +62,7 @@ const LossChart = () => {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              interval="preserveStartEnd"
             />
             <ChartTooltip
               cursor={false}
