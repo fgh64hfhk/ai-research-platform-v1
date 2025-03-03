@@ -64,14 +64,9 @@ interface DataPoint {
 const getDynamicRange = (data: DataPoint[]) => {
   const values = data.flatMap((d) => [d.f1, d.precision, d.recall]);
 
-  console.log("values:", values);
-
   let minValue = Math.min(...values);
   let maxValue = Math.max(...values);
-  console.log("[min, max]:", [minValue.toFixed(2), maxValue.toFixed(2)]);
-
   let range = maxValue - minValue;
-  console.log("range:", range.toFixed(2));
 
   // 確保數據間距明顯
   if (range < 0.1) {
@@ -96,15 +91,12 @@ const getDynamicRange = (data: DataPoint[]) => {
     tickInterval = 0.1; // 預設較大間隔
   }
 
-  console.log("tick interval:", tickInterval);
-
   // 🔹 確保 tickCount 至少有 4 個
   const tickCount = Math.max(
     4,
     Math.ceil((maxValue - minValue) / tickInterval) + 1
   );
-  console.log("result:", tickCount);
-
+  
   return {
     domain: [minValue, maxValue],
     tickCount,
@@ -112,22 +104,51 @@ const getDynamicRange = (data: DataPoint[]) => {
 };
 
 export default function F1ScoreRadarChart() {
+  // 計算最小和最大 F1-score
+  const minF1ScoreData = Math.min(...sampleData.map((d) => d.f1));
+  const maxF1ScoreData = Math.max(...sampleData.map((d) => d.f1));
+
+  // 設定 `Slider` 的最小、最大值和步進值
+  const sliderStep = 0.05; // 設定步長
+  const sliderMax = Math.min(1.0, maxF1ScoreData); // 避免超過 1.0
+  const sliderMin = minF1ScoreData;
+
+  // 計算可移動步數
+  const sliderStepsCount = Math.round((sliderMax - sliderMin) / sliderStep);
+  console.log(`Slider 可移動 ${sliderStepsCount} 步`);
+
   // 狀態管理：最小 F1-score 篩選條件
-  const [minF1, setMinF1] = useState(0.6);
-  // 是否篩選 Top 5 低 F1-score
-  const [filterTop5, setFilterTop5] = useState(false);
+  const [minF1, setMinF1] = useState(sliderMin);
+
+  // 是否篩選 Top 3 低 F1-score
+  const [filterTop3, setFilterTop3] = useState(false);
+
   // 是否顯示 Precision 和 Recall
-  const [showPrecisionRecall, setShowPrecisionRecall] = useState(true);
+  const [showPrecisionRecall, setShowPrecisionRecall] = useState(false);
 
-  //   // 過濾符合條件的數據
-  //   let filteredData = sampleData.filter((d) => d.f1 >= minF1);
-  //   if (filterTop5) {
-  //     filteredData = [...filteredData]
-  //       .sort((a, b) => a.f1 - b.f1) // 依照 F1-score 升序排序
-  //       .slice(0, 5); // 取得最低的前 5 個類別
-  //   }
+  // 過濾符合條件的數據
+  const filteredData = useMemo(() => {
+    let data = sampleData.filter((d) => d.f1 >= minF1);
+  
+    if (filterTop3) {
+      data = [...data].sort((a, b) => a.f1 - b.f1).slice(0, 3);
+    }
+  
+    if (data.length < 3) {
+      const additionalData = sampleData
+        .filter((d) => !data.includes(d))
+        .sort((a, b) => b.f1 - a.f1)
+        .slice(0, 3 - data.length);
+      data = [...data, ...additionalData];
+    }
+  
+    return data;
+  }, [minF1, filterTop3]);
 
-  const dynamicRange = useMemo(() => getDynamicRange(sampleData), []);
+  const dynamicRange = useMemo(
+    () => getDynamicRange(filteredData),
+    [filteredData]
+  );
 
   return (
     <Card>
@@ -146,34 +167,38 @@ export default function F1ScoreRadarChart() {
           <Label>篩選最低 F1-score：{minF1.toFixed(2)}</Label>
           <Slider
             defaultValue={[minF1]}
-            min={0.5}
-            max={1.0}
-            step={0.05}
-            onValueChange={(value) => setMinF1(value[0])}
+            min={sliderMin} // 設定最小值
+            max={sliderMax} // 設定最大值，避免超過 1.0
+            step={sliderStep} // 設定步長
+            onValueChange={(value) => setMinF1(value[0] ?? sliderMin)}
           />
         </div>
-        {/* 🔹 篩選按鈕 (Top 5 / 全部) */}
+
+        {/* 🔹 篩選按鈕 (Top 3 / 全部) */}
         <div className="flex space-x-2">
           <Button
-            variant={filterTop5 ? "default" : "outline"}
-            onClick={() => setFilterTop5(true)}
+            variant={filterTop3 ? "default" : "outline"}
+            onClick={() => setFilterTop3(true)}
           >
-            顯示 Top 5 低 F1-score 類別
+            顯示 Top 3 低 F1-score 類別
           </Button>
           <Button
-            variant={!filterTop5 ? "default" : "outline"}
-            onClick={() => setFilterTop5(false)}
+            variant={!filterTop3 ? "default" : "outline"}
+            onClick={() => setFilterTop3(false)}
           >
             查看所有類別
           </Button>
         </div>
+
+
         <div className="flex items-center space-x-2">
           <Checkbox
             checked={showPrecisionRecall}
-            onCheckedChange={() => setShowPrecisionRecall(!showPrecisionRecall)}
+            onCheckedChange={(checked) => setShowPrecisionRecall(!!checked)}
           />
           <Label>顯示 Precision & Recall</Label>
         </div>
+
       </CardContent>
 
       {/* 📌 圖表區域 */}
@@ -182,7 +207,7 @@ export default function F1ScoreRadarChart() {
           config={sampleConfig}
           className="mx-auto aspect-square max-h-[400px]"
         >
-          <RadarChart data={sampleData} cx="50%" cy="50%" outerRadius="90%">
+          <RadarChart data={filteredData} cx="50%" cy="50%" outerRadius="90%">
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent indicator="line" />}
@@ -203,12 +228,12 @@ export default function F1ScoreRadarChart() {
             <Radar
               dataKey="f1"
               stroke="var(--color-f1)"
-              strokeWidth={3}
+              strokeWidth={2}
               fill="var(--color-f1)"
-              fillOpacity={0.4}
+              fillOpacity={0.3}
             />
             {/* Precision & Recall 顯示 */}
-            {true && (
+            {showPrecisionRecall && (
               <>
                 <Radar
                   dataKey="precision"
@@ -232,8 +257,8 @@ export default function F1ScoreRadarChart() {
 
       {/* 📌 卡片底部 (當前篩選條件) */}
       <CardFooter className="text-sm text-muted-foreground">
-        {true
-          ? "顯示 Top 5 低 F1-score 類別"
+        {filterTop3
+          ? "顯示 Top 3 低 F1-score 類別"
           : `顯示所有類別，篩選最低 F1-score: ${minF1.toFixed(2)}`}
       </CardFooter>
     </Card>
