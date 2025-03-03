@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { CartesianGrid, Line, LineChart, XAxis, Legend } from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, Legend, YAxis } from "recharts";
 
 import {
   Card,
@@ -23,10 +23,10 @@ import {
 } from "@/components/ui/chart";
 
 const chartData = [
-  { version: "v1.0", timestamp: "2025-02-28", modelA: 78.5, modelB: 76.2 },
+  { version: "v1.0", timestamp: "2025-02-28", modelA: 92.5, modelB: 67.2 },
   { version: "v1.1", timestamp: "2025-03-01", modelA: 82.3, modelB: 79.8 },
-  { version: "v2.0", timestamp: "2025-03-05", modelA: 88.7, modelB: 84.1 },
-  { version: "v2.1", timestamp: "2025-03-10", modelA: 90.2, modelB: 86.5 },
+  { version: "v2.0", timestamp: "2025-03-05", modelA: 85.7, modelB: 84.1 },
+  { version: "v2.1", timestamp: "2025-03-10", modelA: 72.2, modelB: 94.5 },
 ];
 
 const chartConfig = {
@@ -75,6 +75,12 @@ export default function AccuracyTrendChart() {
               axisLine={false}
               tickMargin={8}
               interval="preserveStartEnd"
+            />
+            <YAxis 
+              domain={[60, 100]}
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <Legend
