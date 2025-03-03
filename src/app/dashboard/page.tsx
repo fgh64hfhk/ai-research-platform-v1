@@ -1,9 +1,9 @@
-"use client";
+import LossChart from "@/app/dashboard/components/charts/LossChart";
+import AccuracyTrendChart from "./components/charts/AccuracyTrendChart";
+import PredictionPieChart from "./components/charts/PredictionPieChart";
+import F1ScoreRadarChart from "./components/charts/F1ScoreRadarChart";
 
-import LossChart from "@/app/dashboard/LossChart";
-import AccuracyTrendChart from "./AccuracyTrendChart";
-import PredictionPieChart from "./PredictionPieChart";
-import F1ScoreRadarChart from "./F1ScoreRadarChart";
+import TrainingRecordTable from './components/data_table/TrainingRecordTable'
 
 export default function Dashboard() {
   return (
@@ -29,6 +29,13 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <PredictionPieChart />
           <F1ScoreRadarChart />
+        </div>
+      </section>
+
+      {/* 訓練紀錄（Recent Training Runs） */}
+      <section className="space-y-4">
+        <div>
+          <TrainingRecordTable />
         </div>
       </section>
     </div>
