@@ -3,7 +3,8 @@
 import LossChart from "@/app/dashboard/LossChart";
 import AccuracyTrendChart from "./AccuracyTrendChart";
 import PredictionPieChart from "./PredictionPieChart";
-import { Component } from "./InteractivePieChart";
+import F1ScoreRadarChart from "./F1ScoreRadarChart";
+// import { Component } from "./InteractivePieChart";
 
 export default function Dashboard() {
   return (
@@ -28,7 +29,8 @@ export default function Dashboard() {
         {/* Pie Charts 區塊 */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <PredictionPieChart />
-          <Component />
+          {/* <Component /> */}
+          <F1ScoreRadarChart />
         </div>
       </section>
     </div>
