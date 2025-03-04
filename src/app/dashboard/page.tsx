@@ -7,6 +7,7 @@ import TrainingRecordTable from "./components/data_table/TrainingRecordTable";
 
 import GPUUsage from "./components/system_monitor/GPUUsage";
 import CPUUsage from "./components/system_monitor/CPUUsage";
+import SonnerToast from "./components/notification/SonnerToast";
 
 export default function Dashboard() {
   return (
@@ -49,6 +50,10 @@ export default function Dashboard() {
       <section>
         <CPUUsage />
       </section>
+
+      <hr />
+
+      <SonnerToast />
     </div>
   );
 }
