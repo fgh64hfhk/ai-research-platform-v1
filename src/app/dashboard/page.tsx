@@ -3,7 +3,10 @@ import AccuracyTrendChart from "./components/charts/AccuracyTrendChart";
 import PredictionPieChart from "./components/charts/PredictionPieChart";
 import F1ScoreRadarChart from "./components/charts/F1ScoreRadarChart";
 
-import TrainingRecordTable from './components/data_table/TrainingRecordTable'
+import TrainingRecordTable from "./components/data_table/TrainingRecordTable";
+
+import GPUUsage from "./components/system_monitor/GPUUsage";
+import CPUUsage from "./components/system_monitor/CPUUsage";
 
 export default function Dashboard() {
   return (
@@ -37,6 +40,14 @@ export default function Dashboard() {
         <div>
           <TrainingRecordTable />
         </div>
+      </section>
+
+      <section>
+        <GPUUsage />
+      </section>
+
+      <section>
+        <CPUUsage />
       </section>
     </div>
   );
