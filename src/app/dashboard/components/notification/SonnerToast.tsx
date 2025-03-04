@@ -126,6 +126,8 @@ export default function SonnerToast() {
     });
   };
 
+  // 整合通知訊息的狀態管理用於追蹤歷史訊息
+
   return (
     <div className="flex flex-col items-center justify-center h-screen space-x-4">
       <h1 className="text-lg font-semibold">彈出提示視窗測試</h1>
