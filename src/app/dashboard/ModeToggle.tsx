@@ -31,10 +31,7 @@ const themes = [
 ];
 
 export default function ModeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
-
-  console.log(theme);
-  console.log(resolvedTheme);
+  const { theme, setTheme } = useTheme();
 
   return (
     <DropdownMenu>
@@ -82,4 +79,4 @@ export default function ModeToggle() {
       </DropdownMenuContent>
     </DropdownMenu>
   );
-};
+}

@@ -60,7 +60,7 @@ export default function Header() {
           <PopoverTrigger asChild>
             <Button variant="ghost" className="relative">
               <Bell className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full">5</span>
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-72">
