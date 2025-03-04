@@ -9,6 +9,8 @@ import Header from "./Header";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
+import { NotificationProvider } from "./hook/useNotifications";
+
 function DashboardLayout({ children }: { children: ReactNode }) {
   return (
     <div className="flex h-screen w-full">
@@ -32,7 +34,9 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system">
       <SidebarProvider>
-        <DashboardLayout>{children}</DashboardLayout>
+        <NotificationProvider>
+          <DashboardLayout>{children}</DashboardLayout>
+        </NotificationProvider>
       </SidebarProvider>
     </ThemeProvider>
   );

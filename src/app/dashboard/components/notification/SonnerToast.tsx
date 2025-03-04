@@ -4,8 +4,7 @@ import React, { JSX } from "react";
 import { toast as sonnerToast } from "sonner";
 import { X, CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-import useNotifications from "../../hook/useNotifications";
+import { useNotifications } from "../../hook/useNotifications";
 
 // 定義通知類型
 export type ToastType = "success" | "error" | "warning" | "info" | "default";
@@ -91,7 +90,7 @@ function Toast({ id, title, description, type, button }: ToastProps) {
         className="ml-2 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
         onClick={() => sonnerToast.dismiss(id)}
       >
-        <X className="w-4 h-4" />
+        <X className="w-4 h-4" onClick={() => sonnerToast.dismiss(id)} />
       </button>
     </div>
   );
@@ -99,9 +98,7 @@ function Toast({ id, title, description, type, button }: ToastProps) {
 
 // 測試 UI
 export default function SonnerToast() {
-  const { notifications, addNotification } = useNotifications();
-
-  console.log(notifications);
+  const { addNotification } = useNotifications();
 
   const handleToast = (
     title: string,
@@ -110,8 +107,7 @@ export default function SonnerToast() {
     label?: string
   ) => {
     // 記錄通知
-    const timestamp = new Date().toLocaleString();
-    addNotification(title, description, type, timestamp);
+    addNotification(title, description, type);
 
     toast({
       title: title,

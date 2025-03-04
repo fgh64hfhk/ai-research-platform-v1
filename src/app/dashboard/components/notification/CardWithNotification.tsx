@@ -1,6 +1,6 @@
 "use client";
 
-import { BellRing, Check } from "lucide-react";
+import { BellRing, Check, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,30 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-
-const notifications = [
-  {
-    id: 1,
-    title: "New project created",
-    description: "Your project has been successfully created.",
-    date: "2 hours ago",
-    read: true,
-  },
-  {
-    id: 2,
-    title: "New user registered",
-    description: "A new user has registered in your platform.",
-    date: "5 hours ago",
-    read: false,
-  },
-  {
-    id: 3,
-    title: "New payment received",
-    description: "You have received a new payment.",
-    date: "1 day ago",
-    read: false,
-  },
-];
+import { useNotifications } from "../../hook/useNotifications";
 
 type CardProps = React.ComponentProps<typeof Card>;
 
@@ -43,9 +20,10 @@ export default function CardWithNotification({
   className,
   ...props
 }: CardProps) {
-  const unreadNotifications = notifications.reduce((acc, notification) => {
-    return acc + (notification.read ? 0 : 1);
-  }, 0);
+  const { notifications, removeNotification, clearNotifications } =
+    useNotifications();
+  const unreadNotifications = notifications.length;
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen space-y-6 p-6">
       <Card className={cn("w-[380px]", className)} {...props}>
@@ -68,24 +46,37 @@ export default function CardWithNotification({
             </div>
             <Switch />
           </div>
+
           <div>
-            {notifications.map((notification, index) => (
-              <div
-                key={index}
-                className="mb-4 grid grid-cols-[25px_1fr_auto] items-start pb-4 last:mb-0 last:pb-0 "
-              >
-                <span className="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
-                <div className="space-y-1">
-                  <p className="text-sm font-medium leading-none">
-                    {notification.title}
-                  </p>
-                  <p className="text-sm text-muted-foreground">
-                    {notification.description}
-                  </p>
+            {notifications.length === 0 ? (
+              <p className="text-center text-gray-500 dark:text-gray-400">
+                No notifications available.
+              </p>
+            ) : (
+              notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className="mb-4 grid grid-cols-[25px_1fr_auto] items-start pb-4 last:mb-0 last:pb-0 border-b border-gray-200 dark:border-gray-700"
+                >
+                  <span className="flex h-2 w-2 translate-y-1 rounded-full bg-sky-500" />
+                  <div className="space-y-1">
+                    <p className="text-sm font-medium leading-none">
+                      {notification.title}
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      {notification.description}
+                    </p>
+                    <p className="text-xs text-gray-400">{notification.timestamp}</p>
+                  </div>
+                  <button
+                    className="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                    onClick={() => removeNotification(notification.id)}
+                  >
+                    {true ? <X /> : <Check />}
+                  </button>
                 </div>
-                <Check />
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </CardContent>
         <CardFooter>
@@ -93,8 +84,9 @@ export default function CardWithNotification({
             variant="secondary"
             className="w-full"
             onClick={() => {
-              notifications.forEach((n) => (n.read = true));
+              // notifications.forEach((n) => (n.read = true));
               console.log("All notification marked as read.");
+              clearNotifications();
             }}
           >
             Mark all as read

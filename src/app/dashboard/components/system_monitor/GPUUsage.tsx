@@ -4,6 +4,10 @@ import { useState, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 
+import { useNotifications } from "../../hook/useNotifications";
+
+import { toast } from "../notification/SonnerToast";
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 type GpuUsageData = {
@@ -17,6 +21,8 @@ export default function GPUUsage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
+  const { addNotification } = useNotifications();
+
   // 模擬從 API 獲取數據
   useEffect(() => {
     const fetchData = async () => {
@@ -29,6 +35,17 @@ export default function GPUUsage() {
         };
         setGpuData(mockData);
         setError(null);
+
+        if (mockData.core > 70) {
+          
+          addNotification("警告", "CPU 負載過量", "warning")
+          toast({
+            title: "CPU 負載過量",
+            description: "請檢查模型訓練的伺服器",
+            type: "warning",
+          })
+        }
+
       } catch (err) {
         setError("無法獲取數據：" + err);
       } finally {
@@ -39,7 +56,7 @@ export default function GPUUsage() {
 
     const interval = setInterval(fetchData, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [addNotification]);
 
   const chartData = {
     labels: ["Core Usage", "Memory Usage"],
