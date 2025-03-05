@@ -15,7 +15,7 @@ import { Switch } from "@/components/ui/switch";
 import { useNotifications } from "../../hook/useNotifications";
 import { ToastProps } from "./SonnerToast";
 
-import { AnimatePresence, motion } from "motion/react";
+import { motion } from "motion/react";
 import { useState } from "react";
 
 type CardProps = React.ComponentProps<typeof Card>;
@@ -53,7 +53,6 @@ export default function CardWithNotification({
           </div>
 
           {/* 通知列表 */}
-          <AnimatePresence>
             <div className="items-center rounded-md border p-4">
               {notifications.length === 0 ? (
                 <p className="text-center text-gray-500 dark:text-gray-400">
@@ -64,12 +63,11 @@ export default function CardWithNotification({
                   <NotificationItem
                     key={notification.id}
                     notification={notification}
-                    onRemove={() => removeNotification(notification.id)}
+                    onRemoveAction={() => removeNotification(notification.id)}
                   />
                 ))
               )}
             </div>
-          </AnimatePresence>
         </CardContent>
         <CardFooter>
           <Button
@@ -92,12 +90,12 @@ export default function CardWithNotification({
 /**
  * 獨立的通知項目元件
  */
-function NotificationItem({
+export function NotificationItem({
   notification,
-  onRemove,
+  onRemoveAction,
 }: {
   notification: ToastProps;
-  onRemove: () => void;
+  onRemoveAction: () => void;
 }) {
   const [isRemoving, setIsRemoving] = useState(false);
 
@@ -129,7 +127,7 @@ function NotificationItem({
       animate={isRemoving ? { x: -100, opacity: 0 } : { x: 0, opacity: 1 }}
       transition={{ duration: 0.3, ease: "easeInOut" }}
       onAnimationComplete={() => {
-        if (isRemoving) onRemove();
+        if (isRemoving) onRemoveAction();
       }}
       className="flex items-center justify-between p-3 mb-4 rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 shadow-sm hover:shadow-md transition"
     >

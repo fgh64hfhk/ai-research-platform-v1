@@ -1,4 +1,4 @@
-import { Activity, Bell, User } from "lucide-react";
+import { Activity, Bell, BellRing, User } from "lucide-react";
 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,19 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 
 import ModeToggle from "./ModeToggle";
 
+import { useNotifications } from "./hook/useNotifications";
+import { NotificationItem } from "./components/notification/CardWithNotification";
+import { Switch } from "@/components/ui/switch";
+
+import { useNotificationSettings } from "./hook/useNotificationSettings";
+
 export default function Header() {
+  const { notifications, removeNotification, clearNotifications } =
+    useNotifications();
+  const unreadCount = notifications.length;
+
+  const { isPushEnabled, togglePushNotifications } = useNotificationSettings();
+
   return (
     <header className="sticky top-0 w-full z-10 bg-white dark:bg-gray-900 shadow-md flex items-center justify-between px-6 h-16">
       {/* 側邊欄按鈕 + 平台名稱 */}
@@ -55,16 +67,55 @@ export default function Header() {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        {/* 通知按鈕 */}
+        {/* 🔔 通知按鈕 */}
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="ghost" className="relative">
               <Bell className="w-6 h-6" />
-              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full">5</span>
+              {unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full">
+                  {unreadCount}
+                </span>
+              )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-72">
-            <p className="text-sm text-gray-500">目前沒有新的通知</p>
+          <PopoverContent className="w-80 p-2 grid gap-4">
+            {/* 推播通知開關 */}
+            <div className="flex items-center space-x-4 rounded-md border p-4">
+              <BellRing />
+              <div className="flex-1 space-y-1">
+                <p className="text-sm font-medium leading-none">
+                  Push Notifications
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Send notifications to device.
+                </p>
+              </div>
+              <Switch
+                checked={isPushEnabled}
+                onCheckedChange={togglePushNotifications}
+              />
+            </div>
+            {notifications.length === 0 ? (
+              <p className="text-gray-500 text-center py-4">沒有新的通知</p>
+            ) : (
+              <div className="max-h-64 overflow-y-auto space-y-2">
+                {notifications.map((notification) => (
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onRemoveAction={() => removeNotification(notification.id)}
+                  />
+                ))}
+              </div>
+            )}
+            <Button
+              variant="secondary"
+              className="w-full mt-2"
+              onClick={() => clearNotifications()}
+            >
+              標記所有為已讀
+            </Button>
           </PopoverContent>
         </Popover>
 

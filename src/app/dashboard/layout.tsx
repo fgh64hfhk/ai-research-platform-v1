@@ -6,10 +6,13 @@ import { ThemeProvider } from "@/components/theme-provider";
 
 import Header from "./Header";
 
+import { Toaster } from "@/components/ui/sonner";
+
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 
 import { NotificationProvider } from "./hook/useNotifications";
+import { NotificationSettingsProvider } from "./hook/useNotificationSettings";
 
 function DashboardLayout({ children }: { children: ReactNode }) {
   return (
@@ -34,9 +37,12 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider attribute="class" defaultTheme="system">
       <SidebarProvider>
-        <NotificationProvider>
-          <DashboardLayout>{children}</DashboardLayout>
-        </NotificationProvider>
+        <NotificationSettingsProvider>
+          <NotificationProvider>
+            <Toaster richColors />
+            <DashboardLayout>{children}</DashboardLayout>
+          </NotificationProvider>
+        </NotificationSettingsProvider>
       </SidebarProvider>
     </ThemeProvider>
   );
