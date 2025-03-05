@@ -36,7 +36,7 @@ export default function GPUUsage() {
         setGpuData(mockData);
         setError(null);
 
-        if (mockData.core > 70) {
+        if (mockData.core > 90) {
           
           addNotification("警告", "CPU 負載過量", "warning")
           toast({
