@@ -24,6 +24,11 @@ import { NotificationItem } from "./components/notification/CardWithNotification
 import { Switch } from "@/components/ui/switch";
 
 import { useNotificationSettings } from "./hook/useNotificationSettings";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export default function Header() {
   const { notifications, removeNotification, clearNotifications } =
@@ -48,22 +53,86 @@ export default function Header() {
         {/* 使用者選單 */}
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Avatar className="cursor-pointer w-8 h-8 hover:w-10 hover:h-10 transition-all duration-200">
-              <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
-              <AvatarFallback>
-                <User className="w-6 h-6" />
-              </AvatarFallback>
-              <span className="sr-only">Toggle user menu</span>
-            </Avatar>
+            <div className="relative cursor-pointer">
+              {/* 綠色在線狀態環（僅在登入時顯示） */}
+              <Avatar
+                className={`w-10 h-10 transition-all duration-200 
+          ${
+            true
+              ? "border-2 border-white ring-2 ring-green-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
+              : ""
+          }`}
+              >
+                <AvatarImage
+                  src="https://github.com/shadcn.png"
+                  alt="@shadcn"
+                />
+                <AvatarFallback>
+                  <User className="w-6 h-6" />
+                </AvatarFallback>
+              </Avatar>
+            </div>
           </DropdownMenuTrigger>
-          <DropdownMenuContent className="w-48">
-            <DropdownMenuItem onClick={() => console.log("個人設定")}>
-              個人設定
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => console.log("登出")}>
-              登出
-            </DropdownMenuItem>
+
+          <DropdownMenuContent className="w-64 pt-4" sideOffset={16}>
+            {/* 使用者資訊區塊 */}
+            <div className="flex flex-col items-center mb-2">
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  {/* 使用者頭像 + 綠色環 */}
+                  <Avatar
+                    className={`w-16 h-16 mb-2 transition-all duration-200
+          ${
+            true
+              ? "border-2 border-white ring-2 ring-green-500 ring-offset-2 ring-offset-white dark:ring-offset-gray-900"
+              : ""
+          }`}
+                  >
+                    <AvatarImage
+                      src="https://github.com/shadcn.png"
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>
+                      <User className="w-8 h-8" />
+                    </AvatarFallback>
+                  </Avatar>
+                </TooltipTrigger>
+                <TooltipContent className="text-sm text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-800 p-2">
+                  上次登入: 2025-03-05 12:45 PM
+                </TooltipContent>
+              </Tooltip>
+
+              {/* 使用者名稱與職稱 */}
+              <p className="text-lg font-semibold text-gray-900 dark:text-white">
+                Tony Lin
+              </p>
+              <p className="text-sm text-gray-500 dark:text-gray-400">
+                Front-end Engineer
+              </p>
+            </div>
+
+            {/* Dropdown 選單項目 */}
+            <div className="text-center font-semibold">
+              <DropdownMenuItem
+                className="justify-center"
+                onClick={() => console.log("個人設定")}
+              >
+                個人設定
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                className="justify-center"
+                onClick={() => console.log("模型訓練")}
+              >
+                模型訓練
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                className="justify-center hover:bg-red-500 hover:text-white focus:bg-red-500 focus:text-white transition-colors"
+                onClick={() => console.log("登出")}
+              >
+                登出
+              </DropdownMenuItem>
+            </div>
           </DropdownMenuContent>
         </DropdownMenu>
 
