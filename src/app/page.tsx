@@ -1,100 +1,134 @@
+"use client";
+
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+
+import Welcome from "@/app/mdx-page/page.mdx";
+
+// UI 元件
+import ModeToggle from "@/components/layout/ModeToggle";
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleNavigation = (href: string) => {
+    setTimeout(() => {
+      router.push(href);
+    }, 150);
+  };
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
+    <div className="grid min-h-screen grid-cols-1 grid-rows-[auto_1fr_auto] place-items-center px-10 py-12 gap-12 bg-gray-100 dark:bg-gray-900">
+      {/* 頭部區域 */}
+      <header className="w-full max-w-3xl bg-white dark:bg-gray-800 shadow-md rounded-lg px-6 py-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          AI 研究平台
+        </h1>
+        <div className="flex gap-4">
+          <ModeToggle />
+          <Button asChild variant="outline">
+            <Link href="/login">登入</Link>
+          </Button>
+        </div>
+      </header>
+
+      {/* 主內容區域 */}
+      <main className="w-full max-w-3xl bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8 flex flex-col items-center text-center space-y-6">
         <Image
-          className="dark:invert"
           src="/next.svg"
           alt="Next.js logo"
           width={180}
           height={38}
           priority
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <p className="text-lg text-gray-700 dark:text-gray-300">
+          歡迎使用 AI 研究平台，這裡可以管理你的 AI 模型與數據集。
+        </p>
+        
+        <div className="flex flex-wrap justify-center gap-4">
+          <Button
+            variant="secondary"
+            className="transition-all duration-150 hover:bg-gray-200 dark:hover:bg-gray-700"
+            onClick={() => handleNavigation("/dashboard")}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            使用者儀表板
+          </Button>
+          <Button
+            variant="secondary"
+            className="transition-all duration-150 hover:bg-gray-200 dark:hover:bg-gray-700"
+            onClick={() => handleNavigation("/models")}
           >
-            Read our docs
-          </a>
+            模型管理
+          </Button>
         </div>
+
+        <section className="w-full flex flex-wrap justify-center gap-4">
+          {/* README Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="secondary"
+                className="hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                查看 README.md
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogTitle>專案 README</DialogTitle>
+              {/* 這裡使用 Server Component 來顯示靜態 README 內容 */}
+              <Welcome />
+            </DialogContent>
+          </Dialog>
+          {/* Next.js 簡介 Dialog */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="secondary"
+                className="hover:bg-gray-200 dark:hover:bg-gray-700"
+              >
+                Next.js 介紹
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogTitle>Next.js 簡介</DialogTitle>
+              <p className="text-gray-700 dark:text-gray-300">
+                Next.js 是一個基於 React 的框架，提供
+                SSR（伺服器端渲染）、ISR（增量靜態再生） 和 API Routes
+                等功能，適用於現代 Web 應用開發。
+              </p>
+              <p>
+                官方文件：
+                <Link
+                  href="https://nextjs.org/docs"
+                  target="_blank"
+                  className="text-blue-500 hover:underline"
+                >
+                  Next.js 官方文件
+                </Link>
+              </p>
+            </DialogContent>
+          </Dialog>
+        </section>
       </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
+
+      {/* 頁腳區域 */}
+      <footer className="w-full max-w-3xl border-t border-gray-300 dark:border-gray-700 pt-4 flex justify-center gap-6 text-gray-600 dark:text-gray-400">
+        <Link href="/resume">Resume</Link>
+        <Link href="https://github.com/your-github" target="_blank">
+          GitHub
+        </Link>
+        <Link href="https://vercel.com" target="_blank">
+          部署於 Vercel
+        </Link>
       </footer>
     </div>
   );
