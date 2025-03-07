@@ -17,20 +17,21 @@ import {
 
 import { SidebarTrigger } from "@/components/ui/sidebar";
 
-import ModeToggle from "./ModeToggle";
+import ModeToggle from "@/components/layout/ModeToggle";
 
-import { useNotifications } from "./hook/useNotifications";
-import { NotificationItem } from "./components/notification/CardWithNotification";
+import { useNotifications } from "@/hooks/useNotifications";
+import { NotificationItem } from "@/components//layout/CardWithNotification";
 import { Switch } from "@/components/ui/switch";
 
-import { useNotificationSettings } from "./hook/useNotificationSettings";
+import { useNotificationSettings } from "@/hooks/useNotificationSettings";
+
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
-export default function Header() {
+export function Header() {
   const { notifications, removeNotification, clearNotifications } =
     useNotifications();
   const unreadCount = notifications.length;

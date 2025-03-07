@@ -4,7 +4,7 @@ import React, { JSX } from "react";
 import { toast as sonnerToast } from "sonner";
 import { X, CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useNotifications } from "../../hook/useNotifications";
+import { useNotifications } from "@/hooks/useNotifications";
 
 // 定義通知類型
 export type ToastType = "success" | "error" | "warning" | "info" | "default";

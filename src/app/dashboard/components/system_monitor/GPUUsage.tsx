@@ -4,10 +4,10 @@ import { useState, useEffect } from "react";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
 import { Doughnut } from "react-chartjs-2";
 
-import { useNotifications } from "../../hook/useNotifications";
-import { useNotificationSettings } from "../../hook/useNotificationSettings";
+import { useNotifications } from "@/hooks/useNotifications";
+import { useNotificationSettings } from "@/hooks/useNotificationSettings";
 
-import { toast } from "../notification/SonnerToast";
+import { toast } from "@/components/layout/SonnerToast";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 

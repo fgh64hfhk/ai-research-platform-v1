@@ -1,6 +1,6 @@
 import { useState, useContext, createContext, ReactNode } from "react";
 import { nanoid } from "nanoid";
-import { ToastProps, ToastType } from "../components/notification/SonnerToast";
+import { ToastProps, ToastType } from "@/components/layout/SonnerToast";
 
 // 定義 Context Type
 interface NotificationContextType {

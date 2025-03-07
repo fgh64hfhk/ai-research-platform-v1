@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   Chart as ChartJS,
   LineElement,
@@ -10,6 +11,7 @@ import {
   CategoryScale,
   LinearScale,
 } from "chart.js";
+
 import { Line } from "react-chartjs-2";
 import { Button } from "@/components/ui/button";
 
@@ -33,9 +35,9 @@ type CpuUsageData = {
 };
 
 // 模擬 API 獲取數據
-const generateMockData = (range: "20d" | "3m") => {
+const generateMockData = (range: "7d" | "1m") => {
   const data: CpuUsageData[] = [];
-  const dataPoints = range === "20d" ? 20 : 90; // 20 天 或者 3 個月（假設 90 天）
+  const dataPoints = range === "7d" ? 7 : 30; // 7 天 或者 1 個月（假設 30 天）
   for (let i = 0; i < dataPoints; i++) {
     data.push({
       timestamp: new Date(Date.now() - i * 86400000)
@@ -54,7 +56,7 @@ export default function CPUUsage() {
   // 狀態管理
   const [cpuData, setCpuData] = useState<CpuUsageData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [filter, setFilter] = useState<"20d" | "3m">("20d");
+  const [filter, setFilter] = useState<"7d" | "1m">("7d");
 
   // 取得 CPU 負載數據
   useEffect(() => {
@@ -97,7 +99,7 @@ export default function CPUUsage() {
   };
 
   return (
-    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
+    <div className="p-4 bg-white dark:bg-gray-800 rounded-lg shadow w-full min-w-0 max-w-full overflow-hidden">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
         CPU Usage
       </h2>
@@ -105,36 +107,42 @@ export default function CPUUsage() {
       {/* 過濾選項 */}
       <div className="flex justify-end space-x-2 my-2">
         <Button
-          onClick={() => setFilter("20d")}
+          onClick={() => setFilter("7d")}
           className={`px-3 py-1 rounded ${
-            filter === "20d"
+            filter === "7d"
               ? "bg-blue-500 text-white"
               : "bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
           }`}
         >
-          20 天
+          7 天
         </Button>
         <Button
-          onClick={() => setFilter("3m")}
+          onClick={() => setFilter("1m")}
           className={`px-3 py-1 rounded ${
-            filter === "3m"
+            filter === "1m"
               ? "bg-blue-500 text-white"
               : "bg-gray-300 dark:bg-gray-700 text-gray-700 dark:text-gray-300"
           }`}
         >
-          3 個月
+          1 個月
         </Button>
       </div>
 
       {/* 加載狀態 */}
       {loading && <p className="text-gray-500 dark:text-gray-400">載入中...</p>}
 
-      {/* 折線圖 */}
-      {!loading && (
-        <div className="mt-4 p-4 bg-white dark:bg-gray-800 rounded-lg shadow">
-          <Line data={chartData} />
+      {/* 圖表區塊 */}
+      <div className="mt-4 grid">
+        <div className="flex flex-col items-center gap-4 p-6 bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-300 dark:border-gray-600">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+            CPU 核心使用歷史數據
+          </h3>
+
+          <div className="grid place-items-center w-full max-w-[1100px] h-[500px] bg-white py-3 px-3">
+            <Line data={chartData} />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }

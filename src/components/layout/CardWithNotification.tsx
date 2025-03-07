@@ -12,8 +12,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Switch } from "@/components/ui/switch";
-import { useNotifications } from "../../hook/useNotifications";
-import { ToastProps } from "./SonnerToast";
+import { useNotifications } from "@/hooks/useNotifications";
+import { ToastProps } from "@/components/layout/SonnerToast";
 
 import { motion } from "motion/react";
 import { useState } from "react";
