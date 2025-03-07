@@ -38,11 +38,15 @@ import { Badge } from "@/components/ui/badge";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  filterColumnKey: keyof TData; // 允許傳入要篩選的欄位名稱
+  filterPlaceholder?: string; // 可選的 Placeholder 設定
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  filterColumnKey,
+  filterPlaceholder = "Filter data",
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -80,10 +84,10 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         <Input
-          placeholder="Filter Model Name"
-          value={(table.getColumn("name")?.getFilterValue() as string) ?? ""}
+          placeholder={filterPlaceholder}
+          value={(table.getColumn(filterColumnKey.toString())?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
-            table.getColumn("name")?.setFilterValue(event.target.value)
+            table.getColumn(filterColumnKey.toString())?.setFilterValue(event.target.value)
           }
           className="w-64 px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
