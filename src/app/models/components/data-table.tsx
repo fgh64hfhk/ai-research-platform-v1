@@ -35,16 +35,24 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 
+import { ModelVersion } from "./columns";
+
 interface DataTableProps<TData, TValue> {
-  columns: ColumnDef<TData, TValue>[];
+  columnsAction: (
+    modelVersions: Record<string, ModelVersion[]>, // ✅ 新增 modelVersions
+    selectedVersions: Record<string, string>,
+    onSelectedVersionChange: (modelId: string, version: string) => void
+  ) => ColumnDef<TData, TValue>[];
   data: TData[];
+  modelVersions: Record<string, ModelVersion[]>; // ✅ 傳入模型版本
   filterColumnKey: keyof TData; // 允許傳入要篩選的欄位名稱
   filterPlaceholder?: string; // 可選的 Placeholder 設定
 }
 
 export function DataTable<TData, TValue>({
-  columns,
+  columnsAction,
   data,
+  modelVersions,
   filterColumnKey,
   filterPlaceholder = "Filter data",
 }: DataTableProps<TData, TValue>) {
@@ -60,9 +68,23 @@ export function DataTable<TData, TValue>({
     React.useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = React.useState({});
 
+  // 整合 selectedVersions 進入 useReactTable 的 state
+  const [selectedVersions, setSelectedVersions] = React.useState<
+    Record<string, string>
+  >({});
+
+  // 提供一個函式來更新選擇的版本
+  const onSelectedVersionChange = (modelId: string, version: string) => {
+    setSelectedVersions((prev) => ({ ...prev, [modelId]: version }));
+  };
+
   const table = useReactTable({
     data,
-    columns,
+    columns: columnsAction(
+      modelVersions,
+      selectedVersions,
+      onSelectedVersionChange
+    ),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onPaginationChange: setPagination,
@@ -80,14 +102,21 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+
   return (
     <div>
       <div className="flex items-center py-4">
         <Input
           placeholder={filterPlaceholder}
-          value={(table.getColumn(filterColumnKey.toString())?.getFilterValue() as string) ?? ""}
+          value={
+            (table
+              .getColumn(filterColumnKey.toString())
+              ?.getFilterValue() as string) ?? ""
+          }
           onChange={(event) =>
-            table.getColumn(filterColumnKey.toString())?.setFilterValue(event.target.value)
+            table
+              .getColumn(filterColumnKey.toString())
+              ?.setFilterValue(event.target.value)
           }
           className="w-64 px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
@@ -161,7 +190,7 @@ export function DataTable<TData, TValue>({
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
                   No results.

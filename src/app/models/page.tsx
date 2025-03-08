@@ -1,112 +1,149 @@
-import { Model, ModelVersion, columns, versionColumns } from "./components/columns";
+import { Model, ModelVersion, getModelColumns } from "./components/columns";
+
 import { DataTable } from "./components/data-table";
 
-async function getData(): Promise<Model[]> {
-  // Fetch data from your API here.
-  return [
+// 模型資料 (models)
+const models: Model[] = [
+  {
+    id: "TRN001",
+    name: "Model_A",
+    language: "python",
+    description: "First AI model",
+  },
+  {
+    id: "TRN002",
+    name: "Model_B",
+    language: "java",
+    description: "Java-based AI",
+  },
+  {
+    id: "TRN003",
+    name: "Model_C",
+    language: "python",
+    description: "Lightweight AI model",
+  },
+  {
+    id: "TRN004",
+    name: "Model_D",
+    language: "python",
+    description: "High-performance model",
+  },
+  {
+    id: "TRN005",
+    name: "Model_E",
+    language: "c++",
+    description: "Optimized for edge computing",
+  },
+  {
+    id: "TRN006",
+    name: "Model_F",
+    language: "python",
+    description: "NLP model",
+  },
+];
+
+// 模型版本資料 (modelVersions) 使用 key-value 結構
+const modelVersions: Record<string, ModelVersion[]> = {
+  TRN001: [
     {
-      id: "TRN001",
-      name: "Model_A",
-      version: "v_1.0",
-      language: "python",
+      modelId: "TRN001",
+      version: "v1.0",
+      modifiedDate: "20240523",
+      modifiedType: "Initial Release",
       trainingTime: 95,
       buildDate: "20240523",
       status: "Deployment Failed",
     },
     {
-      id: "TRN002",
-      name: "Model_B",
-      version: "v_1.0",
-      language: "python",
-      trainingTime: 135,
-      buildDate: "20250908",
-      status: "Deployed",
-    },
-    {
-      id: "TRN003",
-      name: "Model_C",
-      version: "v_1.0",
-      language: "python",
-      trainingTime: 25,
-      buildDate: "20231130",
-      status: "Training",
-    },
-    {
-      id: "TRN004",
-      name: "Model_D",
-      version: "v_1.0",
-      language: "python",
-      trainingTime: 185,
-      buildDate: "20241009",
-      status: "Deployment Canceled",
-    },
-    {
-      id: "TRN005",
-      name: "Model_E",
-      version: "v_1.0",
-      language: "python",
-      trainingTime: 195,
-      buildDate: "20240314",
-      status: "Pending Deployment",
-    },
-    {
-      id: "TRN006",
-      name: "Model_F",
-      version: "v_1.0",
-      language: "python",
-      trainingTime: 125,
-      buildDate: "20240218",
-    },
-  ];
-}
-
-async function getModelVersion(modelId: string): Promise<ModelVersion[]> {
-  // 模擬 API 請求
-  const allVersions: ModelVersion[] = [
-    {
-      modelId: "Model_A",
-      version: "v1.0",
-      modifiedDate: "20240523",
-      modifiedType: "Initial Release",
-      status: "Failed",
-    },
-    {
-      modelId: "Model_A",
+      modelId: "TRN001",
       version: "v1.1",
       modifiedDate: "20240601",
       modifiedType: "Hyperparameter Tuning",
+      trainingTime: 100,
+      buildDate: "20240601",
       status: "Deployed",
     },
     {
-      modelId: "Model_A",
+      modelId: "TRN001",
       version: "v2.0",
       modifiedDate: "20240610",
       modifiedType: "Added New Dataset",
-      status: "Scheduled",
+      trainingTime: 120,
+      buildDate: "20240610",
+      status: "Training",
     },
+  ],
+  TRN002: [
     {
-      modelId: "Model_B",
+      modelId: "TRN002",
       version: "v1.0",
       modifiedDate: "20250908",
       modifiedType: "Initial Release",
-      status: "Deployed",
+      trainingTime: 135,
+      buildDate: "20250908",
+      status: "Deployment Canceled",
     },
     {
-      modelId: "Model_B",
+      modelId: "TRN002",
       version: "v1.1",
       modifiedDate: "20251001",
       modifiedType: "Bug Fixes",
+      trainingTime: 140,
+      buildDate: "20251001",
+      status: "Pending Deployment",
+    },
+  ],
+  TRN003: [
+    {
+      modelId: "TRN003",
+      version: "v1.0",
+      modifiedDate: "20231130",
+      modifiedType: "Initial Release",
+      trainingTime: 25,
+      buildDate: "20231130",
+      status: "Scheduled",
+    },
+    {
+      modelId: "TRN003",
+      version: "v2.0",
+      modifiedDate: "20231230",
+      modifiedType: "Add Dataset",
+      trainingTime: 30,
+      buildDate: "20231230",
       status: "Inactive",
     },
-  ];
-
-  // 篩選符合 `modelId` 的版本
-  return allVersions.filter((version) => version.modelId === modelId);
-}
+    {
+      modelId: "TRN003",
+      version: "v2.1",
+      modifiedDate: "20240230",
+      modifiedType: "Adjust Epoch",
+      trainingTime: 35,
+      buildDate: "20240230",
+      status: "Scheduled",
+    },
+  ],
+  TRN004: [
+    {
+      modelId: "TRN004",
+      version: "v1.0",
+      modifiedDate: "20231130",
+      modifiedType: "Initial Release",
+      trainingTime: 35,
+      buildDate: "20240930",
+      status: "Training",
+    },
+    {
+      modelId: "TRN004",
+      version: "v1.1",
+      modifiedDate: "20231130",
+      modifiedType: "Initial Release",
+      trainingTime: 25,
+      buildDate: "20231130",
+    },
+  ],
+};
 
 export default async function Models() {
-  const data = await getData();
-  const modelVersionData = await getModelVersion("Model_B");
   return (
     <div className="p-6 space-y-6">
       {/* 標題 & 按鈕區塊 */}
@@ -140,7 +177,13 @@ export default async function Models() {
           </h2>
           <div className="grid grid-cols-1 gap-6">
             <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
-              <DataTable columns={columns} data={data} filterColumnKey="name" filterPlaceholder="Filter Model Name" />
+              <DataTable
+                columnsAction={getModelColumns}
+                data={models}
+                modelVersions={modelVersions}
+                filterColumnKey="name"
+                filterPlaceholder="Filter Model Name"
+              />
             </div>
           </div>
         </div>
@@ -151,9 +194,8 @@ export default async function Models() {
             Version Control
           </h2>
           <div className="grid grid-cols-1 gap-6">
-            
             <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
-              <DataTable columns={versionColumns} data={modelVersionData} filterColumnKey="version" filterPlaceholder="Filter Model Version" />
+              版本控制
             </div>
           </div>
         </div>
