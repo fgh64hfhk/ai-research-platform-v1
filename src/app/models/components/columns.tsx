@@ -117,6 +117,9 @@ export function getModelColumns(
       header: () => <div className="text-left">Model Name</div>,
       enableHiding: false,
       filterFn: "includesString",
+      cell: () => {
+
+      },
     },
     {
       accessorKey: "version",
@@ -134,7 +137,7 @@ export function getModelColumns(
 
         return versions.length > 0 ? (
           <Select
-            value={`${modelId}-${selectedVersion}`}
+            value={selectedVersion}
             onValueChange={(newVersion) =>
               onSelectedVersionChange(modelId, newVersion)
             }
