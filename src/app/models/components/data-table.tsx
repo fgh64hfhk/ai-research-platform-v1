@@ -43,7 +43,8 @@ interface DataTableProps<TData, TValue> {
     selectedVersions: Record<string, string>,
     onSelectedVersionChange: (modelId: string, version: string) => void,
     onModelClick: (modelId: string) => void,
-    onModelDeleteAction: (model: string) => void,
+    onModelEditAction: (model: string, newData: Partial<TData>) => void,
+    onModelDeleteAction: (model: string) => void
   ) => ColumnDef<TData, TValue>[];
   model: TData[];
   modelVersions: Record<string, ModelVersion[]>; // ✅ 傳入模型版本
@@ -52,6 +53,30 @@ interface DataTableProps<TData, TValue> {
   description?: string;
   onModelClickAction: (model: string) => void;
 }
+
+const modelReducer = (
+  state: TData[],
+  action: {
+    type: string;
+    payload: any;
+  }
+) => {
+  switch (action.type) {
+    case "DELETE_MODEL":
+      return state.filter((model) => model.id !== action.payload);
+    case "EDIT_MODEL":
+      return state.map((model) =>
+        model.id === action.payload.id
+          ? {
+              ...model,
+              ...action.payload.data,
+            }
+          : model
+      );
+    default:
+      return state;
+  }
+};
 
 export function DataTable<TData, TValue>({
   columnsAction,
@@ -84,6 +109,8 @@ export function DataTable<TData, TValue>({
     setSelectedVersions((prev) => ({ ...prev, [modelId]: version }));
   };
 
+  const [modelState, dispatch] = React.useReducer(modelReducer, model);
+
   const handleDelete = async (modelId: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this model?"
@@ -91,11 +118,10 @@ export function DataTable<TData, TValue>({
     if (!confirmed) return;
 
     try {
-      // 假設你有一個 API 來處理刪除模型
-      // await fetch(`/api/models/${modelId}`, { method: "DELETE" });
-
-      // 這裡假設 models 是你的狀態，需要手動更新前端
-      // setModels((prevModels) => prevModels.filter((m) => m.id !== modelId));
+      dispatch({
+        type: "DELETE_MODEL",
+        payload: modelId,
+      });
 
       alert(`Model deleted successfully! - ${modelId}`);
     } catch (error) {
@@ -104,14 +130,36 @@ export function DataTable<TData, TValue>({
     }
   };
 
+  const handleEdit = async (modelId: string, newData: Partial<TData>) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this model?"
+    );
+    if (!confirmed) return;
+
+    try {
+      dispatch({
+        type: "EDIT_MODEL",
+        payload: {
+          id: modelId,
+          data: newData,
+        },
+      });
+      alert(`Model updated successfully! - ${modelId}`);
+    } catch (error) {
+      console.error("Failed to delete model", error);
+      alert("Failed to delete the model.");
+    }
+  };
+
   const table = useReactTable({
-    data: model,
+    data: modelState,
     columns: columnsAction(
       modelVersions,
       selectedVersions,
       onSelectedVersionChange,
       onModelClickAction,
-      handleDelete,
+      handleEdit,
+      handleDelete
     ),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),

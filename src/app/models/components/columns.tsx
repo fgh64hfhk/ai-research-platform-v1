@@ -90,6 +90,7 @@ export function getModelColumns(
   selectedVersions: Record<string, string>,
   onSelectedVersionChange: (modelId: string, version: string) => void,
   onModelClick: (modelId: string) => void,
+  onModelEdit: (modelId: string) => void,
   onModelDelete: (modelId: string) => void,
 ): ColumnDef<Model>[] {
   return [
@@ -409,7 +410,7 @@ export function getModelColumns(
                 <Trash className="mr-2 h-4 w-4 text-red-500" />
                 Delete
               </DropdownMenuItem>
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onModelEdit(model.id)}>
                 <Pencil className="mr-2 h-4 w-4" />
                 Edit
               </DropdownMenuItem>
@@ -570,10 +571,6 @@ export function getVersionColumns(): ColumnDef<ModelVersion>[] {
               >
                 <Clipboard className="mr-2 h-4 w-4" />
                 Copy Model-Version ID: {`${version.modelId}-${version.version}`}
-              </DropdownMenuItem>
-              <DropdownMenuItem>
-                <History className="mr-2 h-4 w-4" />
-                Model Version History
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem>
