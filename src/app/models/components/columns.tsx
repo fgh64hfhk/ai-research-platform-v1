@@ -63,6 +63,7 @@ export type ModelVersion = {
 // 模型版本的 key-Value 結構
 export type ModelVersionRecord = Record<string, ModelVersion[]>;
 
+// 狀態顏色函數
 const getModelStatusColor = (status: string | undefined) => {
   switch (status) {
     case "Deployment Failed":
@@ -87,7 +88,9 @@ const getModelStatusColor = (status: string | undefined) => {
 export function getModelColumns(
   modelVersions: Record<string, ModelVersion[]>,
   selectedVersions: Record<string, string>,
-  onSelectedVersionChange: (modelId: string, version: string) => void
+  onSelectedVersionChange: (modelId: string, version: string) => void,
+  onModelClick: (modelId: string) => void,
+  onModelDelete: (modelId: string) => void,
 ): ColumnDef<Model>[] {
   return [
     {
@@ -117,8 +120,17 @@ export function getModelColumns(
       header: () => <div className="text-left">Model Name</div>,
       enableHiding: false,
       filterFn: "includesString",
-      cell: () => {
-
+      cell: ({ row }) => {
+        const model = row.original;
+        return (
+          <Button
+            variant="link"
+            className="text-bule-500 hover:underline pl-0"
+            onClick={() => onModelClick(model.id)}
+          >
+            {model.name}
+          </Button>
+        );
       },
     },
     {
@@ -157,7 +169,9 @@ export function getModelColumns(
             </SelectContent>
           </Select>
         ) : (
-          <div className="text-left">No Versions Available</div> // ✅ 確保沒有版本的模型仍然顯示
+          <div className="text-left">
+            No Versions Available - {selectedVersion}
+          </div>
         );
       },
     },
@@ -196,6 +210,8 @@ export function getModelColumns(
 
         const trainingTimeA = versionDataA?.trainingTime ?? 0;
         const trainingTimeB = versionDataB?.trainingTime ?? 0;
+
+        if (trainingTimeA === trainingTimeB) return 0;
 
         return trainingTimeA - trainingTimeB;
       },
@@ -263,6 +279,8 @@ export function getModelColumns(
             6
           )}-${buildDateB.slice(6, 8)}`
         );
+
+        if (dateA.getTime() === dateB.getTime()) return 0;
 
         return dateA.getTime() - dateB.getTime();
       },
@@ -345,6 +363,8 @@ export function getModelColumns(
           Default: 8, // ensure unknown statuses are last
         };
 
+        if (statusOrder[statusA] === statusOrder[statusB]) return 0;
+
         return (statusOrder[statusA] || 99) - (statusOrder[statusB] || 99);
       },
       cell: ({ row }) => {
@@ -380,6 +400,177 @@ export function getModelColumns(
                 <Clipboard className="mr-2 h-4 w-4" />
                 Copy Model ID: {model.id}
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => onModelClick(model.id)}>
+                <History className="mr-2 h-4 w-4" />
+                Model Version History
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onModelDelete(model.id)}>
+                <Trash className="mr-2 h-4 w-4 text-red-500" />
+                Delete
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Pencil className="mr-2 h-4 w-4" />
+                Edit
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        );
+      },
+      enableHiding: false,
+    },
+  ];
+}
+
+export function getVersionColumns(): ColumnDef<ModelVersion>[] {
+  return [
+    {
+      accessorKey: "version",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="pl-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() ? column.getIsSorted() === "asc" : true)}
+        >
+          Version
+          <ArrowUpDown />
+        </Button>
+      ),
+      enableHiding: false,
+    },
+    {
+      accessorKey: "modifiedDate",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="pl-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() ? column.getIsSorted() === "asc" : true)}
+        >
+          Modified Date
+          <ArrowUpDown />
+        </Button>
+      ),
+      sortingFn: (rowA, rowB) => {
+        const modifiedDateA = rowA.original.modifiedDate ?? "19700101";
+        const modifiedDateB = rowB.original.modifiedDate ?? "19700101";
+
+        const dateA = new Date(
+          `${modifiedDateA.slice(0, 4)}-${modifiedDateA.slice(
+            4,
+            6
+          )}-${modifiedDateA.slice(6, 8)}`
+        );
+        const dateB = new Date(
+          `${modifiedDateB.slice(0, 4)}-${modifiedDateB.slice(
+            4,
+            6
+          )}-${modifiedDateB.slice(6, 8)}`
+        );
+
+        if (dateA.getTime() === dateB.getTime()) return 0;
+
+        return dateA.getTime() - dateB.getTime();
+      },
+      cell: ({ row }) => {
+        const rawDate = row.getValue("modifiedDate");
+        if (
+          typeof rawDate !== "string" ||
+          rawDate.length !== 8 ||
+          isNaN(Number(rawDate))
+        ) {
+          return "Invalid Date";
+        }
+
+        const year = rawDate.slice(0, 4);
+        const month = rawDate.slice(4, 6);
+        const day = rawDate.slice(6, 8);
+        const formattedDate = `${year}-${month}-${day}`;
+
+        const dateObject = new Date(formattedDate);
+
+        if (
+          dateObject.getFullYear().toString() !== year ||
+          (dateObject.getMonth() + 1).toString().padStart(2, "0") !== month ||
+          dateObject.getDate().toString().padStart(2, "0") !== day
+        ) {
+          return "Invalid Date";
+        }
+
+        return <div className="text-left">{formattedDate}</div>;
+      },
+    },
+    {
+      accessorKey: "modifiedType",
+      header: () => <div className="text-left">Modified Type</div>,
+    },
+    {
+      accessorKey: "trainingTime",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="pl-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Training Time
+          <ArrowUpDown />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const minutes = row.original.trainingTime;
+
+        if (typeof minutes !== "number" || isNaN(minutes))
+          return <div className="text-left">Invalid Time</div>;
+
+        const hours = Math.floor(minutes / 60);
+        const remainingMinutes = minutes % 60;
+        const formattedTime =
+          hours > 0 ? `${hours}h ${remainingMinutes}m` : `${remainingMinutes}m`;
+
+        return <div className="text-left">{formattedTime}</div>;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <Button
+          variant="ghost"
+          className="pl-0"
+          onClick={() => column.toggleSorting(column.getIsSorted() ? column.getIsSorted() === "asc" : true)}
+        >
+          Status
+          <ArrowUpDown />
+        </Button>
+      ),
+      cell: ({ row }) => {
+        const status = row.original.status || "Inactive";
+        return <Badge className={getModelStatusColor(status)}>{status}</Badge>;
+      },
+    },
+    {
+      id: "actions",
+      header: () => <div className="text-left">Actions</div>,
+      cell: ({ row }) => {
+        const version = row.original;
+
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center">
+              <DropdownMenuItem
+                onClick={() =>
+                  navigator.clipboard.writeText(
+                    `${version.modelId}-${version.version}`
+                  )
+                }
+              >
+                <Clipboard className="mr-2 h-4 w-4" />
+                Copy Model-Version ID: {`${version.modelId}-${version.version}`}
+              </DropdownMenuItem>
               <DropdownMenuItem>
                 <History className="mr-2 h-4 w-4" />
                 Model Version History
@@ -401,125 +592,3 @@ export function getModelColumns(
     },
   ];
 }
-
-// export const versionColumns: ColumnDef<ModelVersion>[] = [
-//   {
-//     accessorKey: "version",
-//     header: ({ column }) => (
-//       <Button
-//         variant="ghost"
-//         className="pl-0"
-//         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-//       >
-//         Version
-//         <ArrowUpDown />
-//       </Button>
-//     ),
-//     enableHiding: false,
-//   },
-//   {
-//     accessorKey: "modifiedDate",
-//     header: ({ column }) => (
-//       <Button
-//         variant="ghost"
-//         className="pl-0"
-//         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-//       >
-//         Modified Date
-//         <ArrowUpDown />
-//       </Button>
-//     ),
-//     cell: ({ row }) => {
-//       const rawDate = row.getValue("modifiedDate");
-//       if (
-//         typeof rawDate !== "string" ||
-//         rawDate.length !== 8 ||
-//         isNaN(Number(rawDate))
-//       ) {
-//         return "Invalid Date";
-//       }
-
-//       const year = rawDate.slice(0, 4);
-//       const month = rawDate.slice(4, 6);
-//       const day = rawDate.slice(6, 8);
-//       const formattedDate = `${year}-${month}-${day}`;
-
-//       const dateObject = new Date(formattedDate);
-
-//       if (
-//         dateObject.getFullYear().toString() !== year ||
-//         (dateObject.getMonth() + 1).toString().padStart(2, "0") !== month ||
-//         dateObject.getDate().toString().padStart(2, "0") !== day
-//       ) {
-//         return "Invalid Date";
-//       }
-
-//       return <div className="text-left">{formattedDate}</div>;
-//     },
-//   },
-//   {
-//     accessorKey: "modifiedType",
-//     header: () => <div className="text-left">Modified Type</div>,
-//   },
-//   {
-//     accessorKey: "status",
-//     header: ({ column }) => (
-//       <Button
-//         variant="ghost"
-//         className="pl-0"
-//         onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-//       >
-//         Status
-//         <ArrowUpDown />
-//       </Button>
-//     ),
-//     cell: ({ row }) => {
-//       const status = row.original.status || "Inactive";
-//       return <Badge className={getVersionStatusColor(status)}>{status}</Badge>;
-//     },
-//   },
-//   {
-//     id: "actions",
-//     header: () => <div className="text-left">Actions</div>,
-//     cell: ({ row }) => {
-//       const version = row.original;
-
-//       return (
-//         <DropdownMenu>
-//           <DropdownMenuTrigger asChild>
-//             <Button variant="outline" className="h-8 w-8 p-0">
-//               <span className="sr-only">Open menu</span>
-//               <MoreHorizontal className="h-4 w-4" />
-//             </Button>
-//           </DropdownMenuTrigger>
-//           <DropdownMenuContent align="center">
-//             <DropdownMenuItem
-//               onClick={() =>
-//                 navigator.clipboard.writeText(
-//                   `${version.modelId}-${version.version}`
-//                 )
-//               }
-//             >
-//               <Clipboard className="mr-2 h-4 w-4" />
-//               Copy Model-Version ID: {`${version.modelId}-${version.version}`}
-//             </DropdownMenuItem>
-//             <DropdownMenuItem>
-//               <History className="mr-2 h-4 w-4" />
-//               Model Version History
-//             </DropdownMenuItem>
-//             <DropdownMenuSeparator />
-//             <DropdownMenuItem>
-//               <Trash className="mr-2 h-4 w-4 text-red-500" />
-//               Delete
-//             </DropdownMenuItem>
-//             <DropdownMenuItem>
-//               <Pencil className="mr-2 h-4 w-4" />
-//               Edit
-//             </DropdownMenuItem>
-//           </DropdownMenuContent>
-//         </DropdownMenu>
-//       );
-//     },
-//     enableHiding: false,
-//   },
-// ];

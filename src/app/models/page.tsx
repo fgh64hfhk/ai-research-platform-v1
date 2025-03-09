@@ -1,6 +1,18 @@
-import { Model, ModelVersion, getModelColumns } from "./components/columns";
+"use client";
+
+import { useState } from "react";
+
+import {
+  Model,
+  ModelVersion,
+  getModelColumns,
+  getVersionColumns,
+} from "./components/columns";
 
 import { DataTable } from "./components/data-table";
+
+import { Upload, Rocket } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 // 模型資料 (models)
 const models: Model[] = [
@@ -143,7 +155,14 @@ const modelVersions: Record<string, ModelVersion[]> = {
   ],
 };
 
-export default async function Models() {
+export default function Models() {
+  const [selectedModelId, setSelectedModelId] = useState<string | null>(null);
+
+  const handleModelClick = (modelId: string) => {
+    console.log("Selected Model:", modelId);
+    setSelectedModelId(modelId);
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* 標題 & 按鈕區塊 */}
@@ -159,12 +178,21 @@ export default async function Models() {
         </div>
         {/* 右側按鈕區塊 */}
         <div className="flex space-x-2">
-          <button className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
-            Add Model
-          </button>
-          <button className="px-4 py-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-            Manage Versions
-          </button>
+          <Button
+            variant="secondary"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          >
+            <Upload className="w-5 h-5" />
+            Upload Model
+          </Button>
+          <Button
+            disabled={true}
+            variant="outline"
+            className="px-4 py-2 bg-gray-200 dark:bg-gray-700 dark:text-white rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+          >
+            <Rocket className="w-5 h5" />
+            Deploy All
+          </Button>
         </div>
       </div>
 
@@ -179,26 +207,41 @@ export default async function Models() {
             <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
               <DataTable
                 columnsAction={getModelColumns}
-                data={models}
+                model={models}
                 modelVersions={modelVersions}
                 filterColumnKey="name"
                 filterPlaceholder="Filter Model Name"
+                onModelClickAction={handleModelClick}
               />
             </div>
           </div>
         </div>
 
         {/* 版本控制 */}
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-5">
-            Version Control
-          </h2>
-          <div className="grid grid-cols-1 gap-6">
-            <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
-              版本控制
+        {selectedModelId && (
+          <div className="mt-6">
+            <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-5">
+              Version Control
+            </h2>
+            <div className="grid grid-cols-1 gap-6">
+              <div className="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800">
+                {modelVersions[selectedModelId] ? (
+                  <DataTable
+                    columnsAction={getVersionColumns}
+                    model={modelVersions[selectedModelId]}
+                    modelVersions={modelVersions}
+                    filterColumnKey="version"
+                    filterPlaceholder="Filter Model Version"
+                    description={models.find((m) => m.id === selectedModelId)?.description}
+                    onModelClickAction={handleModelClick}
+                  />
+                ) : (
+                  <div className="text-lg">This Model has no Version.</div>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </section>
     </div>
   );

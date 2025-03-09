@@ -39,22 +39,28 @@ import { ModelVersion } from "./columns";
 
 interface DataTableProps<TData, TValue> {
   columnsAction: (
-    modelVersions: Record<string, ModelVersion[]>, // ✅ 新增 modelVersions
+    modelVersions: Record<string, ModelVersion[]>,
     selectedVersions: Record<string, string>,
-    onSelectedVersionChange: (modelId: string, version: string) => void
+    onSelectedVersionChange: (modelId: string, version: string) => void,
+    onModelClick: (modelId: string) => void,
+    onModelDeleteAction: (model: string) => void,
   ) => ColumnDef<TData, TValue>[];
-  data: TData[];
+  model: TData[];
   modelVersions: Record<string, ModelVersion[]>; // ✅ 傳入模型版本
   filterColumnKey: keyof TData; // 允許傳入要篩選的欄位名稱
   filterPlaceholder?: string; // 可選的 Placeholder 設定
+  description?: string;
+  onModelClickAction: (model: string) => void;
 }
 
 export function DataTable<TData, TValue>({
   columnsAction,
-  data,
+  model,
   modelVersions,
   filterColumnKey,
   filterPlaceholder = "Filter data",
+  description,
+  onModelClickAction,
 }: DataTableProps<TData, TValue>) {
   const [pagination, setPagination] = React.useState({
     pageIndex: 0,
@@ -78,12 +84,34 @@ export function DataTable<TData, TValue>({
     setSelectedVersions((prev) => ({ ...prev, [modelId]: version }));
   };
 
+  const handleDelete = async (modelId: string) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this model?"
+    );
+    if (!confirmed) return;
+
+    try {
+      // 假設你有一個 API 來處理刪除模型
+      // await fetch(`/api/models/${modelId}`, { method: "DELETE" });
+
+      // 這裡假設 models 是你的狀態，需要手動更新前端
+      // setModels((prevModels) => prevModels.filter((m) => m.id !== modelId));
+
+      alert(`Model deleted successfully! - ${modelId}`);
+    } catch (error) {
+      console.error("Failed to delete model", error);
+      alert("Failed to delete the model.");
+    }
+  };
+
   const table = useReactTable({
-    data,
+    data: model,
     columns: columnsAction(
       modelVersions,
       selectedVersions,
-      onSelectedVersionChange
+      onSelectedVersionChange,
+      onModelClickAction,
+      handleDelete,
     ),
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -103,9 +131,17 @@ export function DataTable<TData, TValue>({
     },
   });
 
+  const firstModel = model[0] as { modelId: string };
+
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="grid grid-cols-2 py-4 gap-4">
+        {description && (
+          <h2 className="col-span-2 mb-3 pl-2 text-2xl font-bold text-gray-800 dark:text-white">
+            {description} - {firstModel?.modelId}
+          </h2>
+        )}
+
         <Input
           placeholder={filterPlaceholder}
           value={
@@ -118,7 +154,7 @@ export function DataTable<TData, TValue>({
               .getColumn(filterColumnKey.toString())
               ?.setFilterValue(event.target.value)
           }
-          className="w-64 px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200"
+          className="justify-self-start w-64 px-4 py-2 border border-gray-300 rounded-md focus:border-blue-500 focus:ring focus:ring-blue-200"
         />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
