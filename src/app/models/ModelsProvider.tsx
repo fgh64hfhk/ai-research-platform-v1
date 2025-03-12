@@ -1,19 +1,29 @@
 "use client";
 
-import { createContext, useContext, useEffect, useReducer } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useReducer,
+  useState,
+} from "react";
 
 import { modelsReducer, initialState, ModelsState } from "./modelsReducer";
 
-import { Model, ModelVersion, ModelWithLatestVersion } from "./ModelsColumns";
+import { Model, ModelVersion, ModelWithVersion } from "./ModelsColumns";
 
-import { getLatestModelVersions } from "./getLatestModelVersions";
+import { getLatestVersionModels } from "./getLatestVersionModels";
+import { getAllModelVersionNumbers } from "./getAllModelVersionNumbers";
+import { getModelVersion } from "./getModelVersion";
 
 interface ModelsContextType extends ModelsState {
+  allModelVersionNumbers: Record<string, string[]>;
   fetchModels: () => void;
   addModel: (model: Model) => void;
   updateModel: (model: Model) => void;
   deleteModel: (id: string) => void;
   refreshModels: () => void;
+  selectModelVersion: (modelId: string, versionNumber: string) => void;
 }
 
 const ModelsContext = createContext<ModelsContextType | undefined>(undefined);
@@ -63,7 +73,7 @@ const modelVersionsData: ModelVersion[] = [
     version: "v1.0",
     modifiedDate: "2024-05-23",
     modifiedType: "Initial Release",
-    trainingTime: 95, // 時間以分鐘為單位
+    trainingTime: 95,
     buildDate: "2024-04-23",
     status: "Deployment Failed",
   },
@@ -124,7 +134,7 @@ const modelVersionsData: ModelVersion[] = [
   {
     modelId: "TRN003",
     version: "v2.1",
-    modifiedDate: "2024-02-28", // 修正錯誤日期
+    modifiedDate: "2024-02-28",
     modifiedType: "Adjusted Epochs",
     trainingTime: 80,
     buildDate: "2024-02-28",
@@ -150,44 +160,110 @@ const modelVersionsData: ModelVersion[] = [
   },
 ];
 
-// 取得最新的版本
-const latestModelVersions = getLatestModelVersions(modelsData, modelVersionsData);
+// 取得每個模型的最新版本
+const latestModelVersions: ModelWithVersion[] = getLatestVersionModels(
+  modelsData,
+  modelVersionsData
+);
 console.log(latestModelVersions);
 
-async function fetchModelsAPI(): Promise<ModelWithLatestVersion[]> {
+// 取得所有模型的所有版本號
+const allModelVersionNumbers: Record<string, string[]> =
+  getAllModelVersionNumbers(modelVersionsData);
+console.log(allModelVersionNumbers);
+
+async function fetchModelsAPI(
+  modelId?: string,
+  version?: string,
+  models?: ModelWithVersion[],
+): Promise<{
+  models: ModelWithVersion[];
+  versionMap: Record<string, string[]>;
+}> {
   try {
     // const res = await fetch("/api/payments");
     // if (!res.ok) throw new Error("Failed to fetch payments");
     // return await res.json();
 
-    if (!modelsData) throw new Error("Failed to fetch models");
+    if (!latestModelVersions) throw new Error("Failed to fetch models");
 
     return await new Promise((resolve) => {
       setTimeout(() => {
-        resolve(latestModelVersions);
+        if (!modelId || !version || !models) {
+          // 首次調用 API，返回所有模型的最新版本 & 版本號映射
+          resolve({
+            models: latestModelVersions,
+            versionMap: allModelVersionNumbers,
+          });
+        } else {
+          // 模擬呼叫帶有參數的 API 取得該模型對應的版本號碼
+          const versionData = getModelVersion(modelId, version, modelVersionsData);
+          if (!versionData) {
+            console.error(`Version ${version} for model ${modelId} not found.`);
+            resolve({
+              models: latestModelVersions,
+              versionMap: allModelVersionNumbers
+            })
+          }
+          // 更新特定模型的版本，不影響其他模型
+          const updateModels = models.map((model) =>
+            model.id === modelId
+              ? {
+                  ...model,
+                  modelVersion: versionData,
+                }
+              : model
+          );
+          resolve({
+            models: updateModels,
+            versionMap: allModelVersionNumbers,
+          });
+        }
       }, 1000);
     });
   } catch (error) {
     console.error(error);
-    return [];
+    return { models: [], versionMap: {} };
   }
 }
 
 // 建立 Provider
 export function ModelsProvider({ children }: { children: React.ReactNode }) {
   const [models, dispatch] = useReducer(modelsReducer, initialState);
+  const [allModelVersionNumbers, setAllModelVersionNumbers] = useState<
+    Record<string, string[]>
+  >({});
 
-  // 讀取數據
+  // 讀取數據（首次載入）
   const fetchModels = async () => {
     dispatch({ type: "SET_LOADING", payload: true });
     try {
-      const data = await fetchModelsAPI();
-      dispatch({ type: "FETCH_SUCCESS", payload: data });
+      const { models, versionMap } = await fetchModelsAPI();
+      dispatch({ type: "FETCH_SUCCESS", payload: models });
+      setAllModelVersionNumbers(versionMap); // 存入全域狀態
     } catch (err) {
       dispatch({
         type: "SET_ERROR",
         payload: `Failed to load payments: ${err}`,
       });
+    }
+  };
+
+  const updatedModels = models.models;
+
+  // 更新特定模型的版本
+  const selectModelVersion = async (
+    modelId: string,
+    versionNumber: string
+  ) => {
+    try {
+      const { models } = await fetchModelsAPI(modelId, versionNumber, updatedModels);
+      dispatch({
+        type: "SELECT_MODEL_VERSION",
+        payload: models, // 更新整個 models 陣列
+      });
+    } catch (error) {
+      console.error("Failed to update model version:", error);
     }
   };
 
@@ -215,11 +291,13 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
     <ModelsContext.Provider
       value={{
         ...models,
+        allModelVersionNumbers,
         fetchModels,
         refreshModels: fetchModels,
         addModel,
         updateModel,
         deleteModel,
+        selectModelVersion
       }}
     >
       {children}

@@ -3,6 +3,10 @@
 
 import { createColumns } from "./createColumns";
 
+import { DataTableColumnHeader } from "./ColumnHeader";
+
+import { ModelVersionSelector } from "./ModelVersionSelect";
+
 // 定義數據類型 (Model Type)
 export type Model = {
   id: string;
@@ -30,29 +34,39 @@ export type ModelVersion = {
     | undefined;
 };
 
-export type ModelWithLatestVersion = Model & {
-  latestVersion?: ModelVersion; // 最新版本
+export type ModelWithVersion = Model & {
+  modelVersion?: ModelVersion; // 最新版本
 };
 
 // 定義表格列 (columns 設置)
-export const columns = createColumns<ModelWithLatestVersion>([
-  { accessorKey: "name", header: "Model Name" },
+export const columns = createColumns<ModelWithVersion>([
+  {
+    accessorKey: "name",
+    header: "Model Name",
+  },
   { accessorKey: "language", header: "Language" },
   {
-    accessorKey: "latestVersion.version",
-    header: "Latest Version",
-    cell: ({ row }) => row.original.latestVersion?.version || "N/A",
+    accessorKey: "modelVersion.version",
+    header: "Version",
+    cell: ({ row }) => (
+      <ModelVersionSelector
+        modelId={row.original.id}
+        currentVersion={row.original.modelVersion?.version}
+      />
+    ),
   },
   {
-    accessorKey: "latestVersion.modifiedDate",
-    header: "Last Modified",
-    cell: ({ row }) => row.original.latestVersion?.modifiedDate || "N/A",
+    accessorKey: "modelVersion.modifiedDate",
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Last Modified" />
+    ),
+    cell: ({ row }) => row.original.modelVersion?.modifiedDate || "N/A",
   },
   {
-    accessorKey: "latestVersion.trainingTime",
+    accessorKey: "modelVersion.trainingTime",
     header: "Training Time (hrs)",
     cell: ({ row }) => {
-      const time = row.original.latestVersion?.trainingTime ?? 0;
+      const time = row.original.modelVersion?.trainingTime ?? 0;
       const hours = Math.floor(time / 60);
       const minutes = time % 60;
 
@@ -60,15 +74,15 @@ export const columns = createColumns<ModelWithLatestVersion>([
     },
   },
   {
-    accessorKey: "latestVersion.buildDate",
+    accessorKey: "modelVersion.buildDate",
     header: "Build Date",
-    cell: ({ row }) => row.original.latestVersion?.buildDate || "N/A",
+    cell: ({ row }) => row.original.modelVersion?.buildDate || "N/A",
   },
   {
-    accessorKey: "latestVersion.status",
+    accessorKey: "modelVersion.status",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.original.latestVersion?.status || "Unknown";
+      const status = row.original.modelVersion?.status || "Unknown";
       return (
         <span
           className={`status-badge ${status.toLowerCase().replace(/\s/g, "-")}`}

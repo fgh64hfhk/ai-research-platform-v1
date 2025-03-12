@@ -1,17 +1,21 @@
-import { Model } from "./ModelsColumns";
+import { Model, ModelWithVersion } from "./ModelsColumns";
 
 // 定義 Action 類型
 export type ModelsAction =
-  | { type: "FETCH_SUCCESS"; payload: Model[] }
+  | { type: "FETCH_SUCCESS"; payload: ModelWithVersion[] }
   | { type: "ADD_MODEL"; payload: Model }
   | { type: "UPDATE_MODEL"; payload: Model }
   | { type: "DELETE_MODEL"; payload: string }
   | { type: "SET_ERROR"; payload: string }
-  | { type: "SET_LOADING"; payload: boolean };
+  | { type: "SET_LOADING"; payload: boolean }
+  | {
+      type: "SELECT_MODEL_VERSION";
+      payload: ModelWithVersion[];
+    };
 
 // 定義狀態結構
 export type ModelsState = {
-  models: Model[];
+  models: ModelWithVersion[];
   loading: boolean;
   error: string | null;
 };
@@ -32,7 +36,7 @@ export function modelsReducer(
     case "FETCH_SUCCESS":
       return {
         ...state,
-        models: action.payload,
+        models: action.payload, // 只更新模型數據
         loading: false,
         error: null,
       };
@@ -54,6 +58,11 @@ export function modelsReducer(
       return { ...state, error: action.payload, loading: false };
     case "SET_LOADING":
       return { ...state, loading: action.payload };
+    case "SELECT_MODEL_VERSION":
+      return {
+        ...state,
+        models: action.payload, // 直接更新完整的 models 陣列
+      };
     default:
       return state;
   }

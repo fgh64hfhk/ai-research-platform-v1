@@ -1,4 +1,4 @@
-import { Model, ModelVersion, ModelWithLatestVersion } from "./ModelsColumns";
+import { Model, ModelVersion, ModelWithVersion } from "./ModelsColumns";
 
 /**
  * 找出每個模型的最新版本
@@ -7,10 +7,10 @@ import { Model, ModelVersion, ModelWithLatestVersion } from "./ModelsColumns";
  * @returns ModelWithLatestVersion[]（包含最新版本的模型陣列）
  */
 
-export function getLatestModelVersions(
+export function getLatestVersionModels(
   models: Model[],
   modelVersions: ModelVersion[]
-): ModelWithLatestVersion[] {
+): ModelWithVersion[] {
   // 建立一個 Map 來存放每個 modelId 的最新版本
   const latestVersionsMap: Record<string, ModelVersion> = {};
   // 遍歷所有版本數據，找到每個模型的最新版本
@@ -27,6 +27,6 @@ export function getLatestModelVersions(
   // 建立最終的 ModelWithLatestVersion 陣列
   return models.map((model) => ({
     ...model,
-    latestVersion: latestVersionsMap[model.id] || null, // 若無對應版本則為 null
+    modelVersion: latestVersionsMap[model.id] || null, // 若無對應版本則為 null
   }));
 }
