@@ -74,7 +74,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2024-05-23",
     modifiedType: "Initial Release",
     trainingTime: 95,
-    buildDate: "2024-04-23",
+    buildDate: "20240423",
     status: "Deployment Failed",
   },
   {
@@ -83,16 +83,16 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2024-06-01",
     modifiedType: "Hyperparameter Tuning",
     trainingTime: 100,
-    buildDate: "2024-06-01",
+    buildDate: "20240501",
     status: "Deployed",
   },
   {
     modelId: "TRN001",
     version: "v2.0",
-    modifiedDate: "2024-06-10",
+    modifiedDate: "2024-06-30",
     modifiedType: "Added New Dataset",
     trainingTime: 120,
-    buildDate: "2024-06-05",
+    buildDate: "20240530",
     status: "Training",
   },
   {
@@ -101,7 +101,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2025-09-08",
     modifiedType: "Initial Release",
     trainingTime: 135,
-    buildDate: "2025-09-08",
+    buildDate: "20250808",
     status: "Deployment Canceled",
   },
   {
@@ -110,7 +110,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2025-10-01",
     modifiedType: "Bug Fixes",
     trainingTime: 140,
-    buildDate: "2025-10-01",
+    buildDate: "20250901",
     status: "Pending Deployment",
   },
   {
@@ -119,7 +119,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2023-11-30",
     modifiedType: "Initial Release",
     trainingTime: 60,
-    buildDate: "2023-11-30",
+    buildDate: "20231030",
     status: "Scheduled",
   },
   {
@@ -128,7 +128,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2023-12-30",
     modifiedType: "Added Dataset",
     trainingTime: 75,
-    buildDate: "2023-12-30",
+    buildDate: "20231130",
     status: "Inactive",
   },
   {
@@ -137,7 +137,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2024-02-28",
     modifiedType: "Adjusted Epochs",
     trainingTime: 80,
-    buildDate: "2024-02-28",
+    buildDate: "20240128",
     status: "Scheduled",
   },
   {
@@ -146,7 +146,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2023-11-30",
     modifiedType: "Initial Release",
     trainingTime: 90,
-    buildDate: "2023-11-30",
+    buildDate: "20231030",
     status: "Training",
   },
   {
@@ -155,7 +155,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedDate: "2024-09-30",
     modifiedType: "Performance Optimization",
     trainingTime: 50,
-    buildDate: "2024-09-30",
+    buildDate: "20240230",
     status: "Deployed",
   },
 ];
