@@ -3,7 +3,11 @@ import { ModelsProvider } from "./ModelsProvider";
 import { ModelsTable } from "./ModelsTable";
 import { Rocket, Upload } from "lucide-react";
 
+import AddModelDialog from "./components/AddModelDialog";
+import AddModelVersionDialog from "./components/AddModelVersionDialog";
+
 export default function ModelPage() {
+
   return (
     <ModelsProvider>
       {/* 標題 & 按鈕區塊 */}
@@ -19,6 +23,8 @@ export default function ModelPage() {
         </div>
         {/* 右側按鈕區塊 */}
         <div className="flex space-x-2">
+          <AddModelDialog />
+          <AddModelVersionDialog />
           <Button
             variant="secondary"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"

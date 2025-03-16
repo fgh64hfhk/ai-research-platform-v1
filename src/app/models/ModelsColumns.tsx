@@ -33,6 +33,17 @@ export type Model = {
   description: string;
 };
 
+// 定義模型版本的狀態 ENUM
+export enum ModelStatus {
+  DEPLOYMENT_FAILED = "Deployment Failed",
+  DEPLOYED = "Deployed",
+  TRAINING = "Training",
+  DEPLOYMENT_CANCELED = "Deployment Canceled",
+  PENDING_DEPLOYMENT = "Pending Deployment",
+  SCHEDULED = "Scheduled",
+  INACTIVE = "Inactive",
+}
+
 // 定義數據類型 (Model Version Type)
 export type ModelVersion = {
   modelId: string; // 對應的模型 ID
@@ -41,15 +52,7 @@ export type ModelVersion = {
   modifiedType: string; // 變更類型
   trainingTime: number; // 訓練時間
   buildDate: string; // 構建日期
-  status?:
-    | "Deployment Failed"
-    | "Deployed"
-    | "Training"
-    | "Deployment Canceled"
-    | "Pending Deployment"
-    | "Scheduled"
-    | "Inactive"
-    | undefined;
+  status?: ModelStatus;
 };
 
 export type ModelWithVersion = Model & {
