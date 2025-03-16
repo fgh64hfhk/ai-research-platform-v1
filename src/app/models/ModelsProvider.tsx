@@ -14,7 +14,7 @@ import { Model, ModelVersion, ModelWithVersion } from "./ModelsColumns";
 
 import { getLatestVersionModels } from "./getLatestVersionModels";
 import { getAllModelVersionNumbers } from "./getAllModelVersionNumbers";
-import { getModelVersion } from "./getModelVersion";
+import { findModelVersion } from "./findModelVersion";
 
 interface ModelsContextType extends ModelsState {
   allModelVersionNumbers: Record<string, string[]>;
@@ -181,9 +181,6 @@ async function fetchModelsAPI(
   versionMap: Record<string, string[]>;
 }> {
   try {
-    // const res = await fetch("/api/payments");
-    // if (!res.ok) throw new Error("Failed to fetch payments");
-    // return await res.json();
 
     if (!latestModelVersions) throw new Error("Failed to fetch models");
 
@@ -197,7 +194,7 @@ async function fetchModelsAPI(
           });
         } else {
           // 模擬呼叫帶有參數的 API 取得該模型對應的版本號碼
-          const versionData = getModelVersion(modelId, version, modelVersionsData);
+          const versionData = findModelVersion(modelId, version, modelVersionsData);
           if (!versionData) {
             console.error(`Version ${version} for model ${modelId} not found.`);
             resolve({
@@ -229,7 +226,7 @@ async function fetchModelsAPI(
 
 // 建立 Provider
 export function ModelsProvider({ children }: { children: React.ReactNode }) {
-  const [models, dispatch] = useReducer(modelsReducer, initialState);
+  const [data, dispatch] = useReducer(modelsReducer, initialState);
   const [allModelVersionNumbers, setAllModelVersionNumbers] = useState<
     Record<string, string[]>
   >({});
@@ -249,7 +246,7 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const updatedModels = models.models;
+  const updatedModels = data.models;
 
   // 更新特定模型的版本
   const selectModelVersion = async (
@@ -290,7 +287,7 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
   return (
     <ModelsContext.Provider
       value={{
-        ...models,
+        ...data,
         allModelVersionNumbers,
         fetchModels,
         refreshModels: fetchModels,

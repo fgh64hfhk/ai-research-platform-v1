@@ -36,7 +36,7 @@ export function modelsReducer(
     case "FETCH_SUCCESS":
       return {
         ...state,
-        models: action.payload, // 只更新模型數據
+        models: action.payload,
         loading: false,
         error: null,
       };

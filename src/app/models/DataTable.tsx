@@ -129,7 +129,7 @@ export function DataTable<TData, TValue>({
                       column.toggleVisibility(!!value)
                     }
                   >
-                    {column.id}
+                    {column.id.slice(5)}
                   </DropdownMenuCheckboxItem>
                 );
               })}
