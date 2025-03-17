@@ -11,7 +11,7 @@ export function ModelsTable() {
     error,
     fetchModels,
     refreshModels,
-    addModel,
+    addTempModel,
     updateModel,
     deleteModel,
   } = useModels();
@@ -38,11 +38,11 @@ export function ModelsTable() {
       <button
         className="mb-4 ml-2 px-4 py-2 bg-green-500 text-white rounded"
         onClick={() =>
-          addModel({
+          addTempModel({
             id: "ID_new",
             name: "TRN_new",
             language: "LAN_new",
-            description: "DES_new"
+            description: "DES_new",
           })
         }
       >
@@ -56,7 +56,7 @@ export function ModelsTable() {
             id: models[0]?.id,
             name: "TRN_update",
             language: "LAN_update",
-            description: "DES_update"
+            description: "DES_update",
           })
         }
       >

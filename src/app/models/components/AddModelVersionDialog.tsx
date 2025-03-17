@@ -15,8 +15,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-import { Model, ModelVersion, ModelStatus } from "../ModelsColumns";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Model,
+  ModelVersion,
+  ModelStatus,
+  ModelWithVersion,
+} from "../ModelsColumns";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import { useModels } from "../ModelsProvider";
+import { Upload } from "lucide-react";
 
 /**
  * AddModelVersionDialog - A form dialog for adding a new version to a model.
@@ -28,33 +44,41 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrig
 
 export default function AddModelVersionDialog(): JSX.Element {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedModel, setSelectedModel] = useState<Model | null>(null);
+  const [currentEditModel, setCurrentEditModel] = useState<Model | null>(null);
   const [version, setVersion] = useState("");
   const [modifiedType, setModifiedType] = useState("");
   const [trainingTime, setTrainingTime] = useState("");
   const [status, setStatus] = useState<ModelStatus | undefined>(undefined);
 
+  const { addFinalModel } = useModels();
+
   // 監聽 sessionStorageUpdated 事件來更新選取的模型
   useEffect(() => {
     const checkNewModel = () => {
-      const storedModel = sessionStorage.getItem("selectedModel");
+      const storedModel = sessionStorage.getItem("tempModel");
       if (storedModel) {
-        setSelectedModel(JSON.parse(storedModel));
-        setIsOpen(true); // 自動開啟對話框
+        const parsedModel = JSON.parse(storedModel);
+        if (parsedModel.id !== currentEditModel?.id) {
+          // 只有在不同模型時才更新
+          setTimeout(() => {
+            setCurrentEditModel(JSON.parse(storedModel));
+            setIsOpen(true); // 自動開啟對話框
+          }, 0); // 🔥 這樣確保 setState 在 effect 階段執行，而不是 render 階段
+        }
       }
     };
 
-    checkNewModel(); // 初始化時檢查
+    checkNewModel(); // 🚨 這行在 render 階段被執行，現在它不會同步修改狀態了
 
     window.addEventListener("sessionStorageUpdated", checkNewModel);
     return () => {
       window.removeEventListener("sessionStorageUpdated", checkNewModel);
     };
-  }, []);
+  }, [currentEditModel?.id]); // 🔥 只有 `currentEditModel` 變更時，才執行這個 effect
 
   const handleSave = () => {
     if (
-      !selectedModel ||
+      !currentEditModel ||
       !version ||
       !modifiedType ||
       !trainingTime ||
@@ -65,7 +89,7 @@ export default function AddModelVersionDialog(): JSX.Element {
     }
 
     const newModelVersion: ModelVersion = {
-      modelId: selectedModel.id,
+      modelId: currentEditModel.id,
       version,
       modifiedDate: new Date().toISOString().split("T")[0], // 自動填入當前日期
       modifiedType,
@@ -73,13 +97,17 @@ export default function AddModelVersionDialog(): JSX.Element {
       buildDate: new Date().toISOString().split("T")[0], // 預設 buildDate 為今天
       status,
     };
-    console.log("新增模型版本:", newModelVersion);
 
-    // 清除 sessionStorage，避免下次開啟時誤觸發
-    sessionStorage.removeItem("selectedModel");
+    const newModelWithVersion: ModelWithVersion = {
+      ...currentEditModel,
+      modelVersion: newModelVersion,
+    };
+    console.log("新增模型版本:", newModelWithVersion);
 
-    // **手動移除 event listener，確保 event 監聽器不會持續存在**
-    window.removeEventListener("sessionStorageUpdated", () => {});
+    addFinalModel(newModelWithVersion);
+
+    // 清除正在編輯的模型狀態
+    setCurrentEditModel(null);
 
     setIsOpen(false);
   };
@@ -87,7 +115,11 @@ export default function AddModelVersionDialog(): JSX.Element {
     <div className="flex items-center justify-center">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="default" disabled={!selectedModel}>
+          <Button
+            variant="secondary"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          >
+            <Upload className="w-5 h-5" />
             新增模型版本
           </Button>
         </DialogTrigger>
@@ -96,8 +128,8 @@ export default function AddModelVersionDialog(): JSX.Element {
           <DialogHeader>
             <DialogTitle>新增模型版本</DialogTitle>
             <DialogDescription>
-              {selectedModel
-                ? `請為 ${selectedModel.name} 設定版本資訊`
+              {currentEditModel
+                ? `請為 ${currentEditModel.name} 設定版本資訊`
                 : "請先選擇一個模型"}
             </DialogDescription>
           </DialogHeader>

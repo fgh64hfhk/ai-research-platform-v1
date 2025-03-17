@@ -10,7 +10,12 @@ import {
 
 import { modelsReducer, initialState, ModelsState } from "./modelsReducer";
 
-import { Model, ModelVersion, ModelWithVersion } from "./ModelsColumns";
+import {
+  Model,
+  ModelStatus,
+  ModelVersion,
+  ModelWithVersion,
+} from "./ModelsColumns";
 
 import { getLatestVersionModels } from "./getLatestVersionModels";
 import { getAllModelVersionNumbers } from "./getAllModelVersionNumbers";
@@ -19,7 +24,8 @@ import { findModelVersion } from "./findModelVersion";
 interface ModelsContextType extends ModelsState {
   allModelVersionNumbers: Record<string, string[]>;
   fetchModels: () => void;
-  addModel: (model: Model) => void;
+  addTempModel: (model: Model) => void;
+  addFinalModel: (modelWithVersion: ModelWithVersion) => void;
   updateModel: (model: Model) => void;
   deleteModel: (id: string) => void;
   refreshModels: () => void;
@@ -75,7 +81,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Initial Release",
     trainingTime: 95,
     buildDate: "20240423",
-    status: "Deployment Failed",
+    status: ModelStatus.DEPLOYED,
   },
   {
     modelId: "TRN001",
@@ -84,7 +90,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Hyperparameter Tuning",
     trainingTime: 100,
     buildDate: "20240501",
-    status: "Deployed",
+    status: ModelStatus.DEPLOYMENT_CANCELED,
   },
   {
     modelId: "TRN001",
@@ -93,7 +99,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Added New Dataset",
     trainingTime: 120,
     buildDate: "20240530",
-    status: "Training",
+    status: ModelStatus.DEPLOYMENT_FAILED,
   },
   {
     modelId: "TRN002",
@@ -102,7 +108,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Initial Release",
     trainingTime: 135,
     buildDate: "20250808",
-    status: "Deployment Canceled",
+    status: ModelStatus.INACTIVE,
   },
   {
     modelId: "TRN002",
@@ -111,7 +117,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Bug Fixes",
     trainingTime: 140,
     buildDate: "20250901",
-    status: "Pending Deployment",
+    status: ModelStatus.PENDING_DEPLOYMENT,
   },
   {
     modelId: "TRN003",
@@ -120,7 +126,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Initial Release",
     trainingTime: 60,
     buildDate: "20231030",
-    status: "Scheduled",
+    status: ModelStatus.SCHEDULED,
   },
   {
     modelId: "TRN003",
@@ -129,7 +135,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Added Dataset",
     trainingTime: 75,
     buildDate: "20231130",
-    status: "Inactive",
+    status: ModelStatus.TRAINING,
   },
   {
     modelId: "TRN003",
@@ -138,7 +144,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Adjusted Epochs",
     trainingTime: 80,
     buildDate: "20240128",
-    status: "Scheduled",
+    status: ModelStatus.DEPLOYED,
   },
   {
     modelId: "TRN004",
@@ -147,7 +153,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Initial Release",
     trainingTime: 90,
     buildDate: "20231030",
-    status: "Training",
+    status: ModelStatus.DEPLOYMENT_CANCELED,
   },
   {
     modelId: "TRN004",
@@ -156,7 +162,7 @@ const modelVersionsData: ModelVersion[] = [
     modifiedType: "Performance Optimization",
     trainingTime: 50,
     buildDate: "20240230",
-    status: "Deployed",
+    status: ModelStatus.DEPLOYMENT_FAILED,
   },
 ];
 
@@ -175,13 +181,12 @@ console.log(allModelVersionNumbers);
 async function fetchModelsAPI(
   modelId?: string,
   version?: string,
-  models?: ModelWithVersion[],
+  models?: ModelWithVersion[]
 ): Promise<{
   models: ModelWithVersion[];
   versionMap: Record<string, string[]>;
 }> {
   try {
-
     if (!latestModelVersions) throw new Error("Failed to fetch models");
 
     return await new Promise((resolve) => {
@@ -194,13 +199,17 @@ async function fetchModelsAPI(
           });
         } else {
           // 模擬呼叫帶有參數的 API 取得該模型對應的版本號碼
-          const versionData = findModelVersion(modelId, version, modelVersionsData);
+          const versionData = findModelVersion(
+            modelId,
+            version,
+            modelVersionsData
+          );
           if (!versionData) {
             console.error(`Version ${version} for model ${modelId} not found.`);
             resolve({
               models: latestModelVersions,
-              versionMap: allModelVersionNumbers
-            })
+              versionMap: allModelVersionNumbers,
+            });
           }
           // 更新特定模型的版本，不影響其他模型
           const updateModels = models.map((model) =>
@@ -249,12 +258,13 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
   const updatedModels = data.models;
 
   // 更新特定模型的版本
-  const selectModelVersion = async (
-    modelId: string,
-    versionNumber: string
-  ) => {
+  const selectModelVersion = async (modelId: string, versionNumber: string) => {
     try {
-      const { models } = await fetchModelsAPI(modelId, versionNumber, updatedModels);
+      const { models } = await fetchModelsAPI(
+        modelId,
+        versionNumber,
+        updatedModels
+      );
       dispatch({
         type: "SELECT_MODEL_VERSION",
         payload: models, // 更新整個 models 陣列
@@ -264,9 +274,25 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 新增付款
-  const addModel = (model: Model) => {
-    dispatch({ type: "ADD_MODEL", payload: model });
+  // 新增暫存模型
+  const addTempModel = (model: Model) => {
+    dispatch({ type: "ADD_MODEL_TEMP", payload: model });
+  };
+
+  // 新增完整模型
+  const addFinalModel = (modelWithVersion: ModelWithVersion) => {
+    setAllModelVersionNumbers((prev) => {
+      if (!modelWithVersion.modelVersion) return prev; // 直接返回舊的狀態
+      return {
+        ...prev,
+        [modelWithVersion.id]: [
+          ...(prev[modelWithVersion.id] || []),
+          modelWithVersion.modelVersion.version,
+        ],
+      };
+    });
+
+    dispatch({ type: "ADD_MODEL_FINAL", payload: modelWithVersion });
   };
 
   // 更新付款
@@ -291,10 +317,11 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
         allModelVersionNumbers,
         fetchModels,
         refreshModels: fetchModels,
-        addModel,
+        addTempModel,
+        addFinalModel,
         updateModel,
         deleteModel,
-        selectModelVersion
+        selectModelVersion,
       }}
     >
       {children}

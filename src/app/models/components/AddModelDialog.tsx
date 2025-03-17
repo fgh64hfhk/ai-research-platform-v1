@@ -18,6 +18,9 @@ import { Textarea } from "@/components/ui/textarea";
 
 import { Model } from "../ModelsColumns";
 
+import { useModels } from "../ModelsProvider";
+import { Upload } from "lucide-react";
+
 /**
  * AddModelDialog component displays a dialog form for adding a new model.
  *
@@ -30,6 +33,8 @@ export default function AddModelDialog(): JSX.Element {
   const [language, setLanguage] = useState("");
   const [description, setDescription] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+
+  const { addTempModel } = useModels();
 
   const handleSave = () => {
     if (!name || !language) {
@@ -44,11 +49,7 @@ export default function AddModelDialog(): JSX.Element {
       description,
     };
 
-    sessionStorage.setItem("selectedModel", JSON.stringify(newModel));
-    console.log("已儲存模型至 sessionStorage:", newModel);
-
-    // 手動觸發 CustomEvent，讓其他組件監聽
-    window.dispatchEvent(new Event("sessionStorageUpdated"));
+    addTempModel(newModel);
 
     setIsOpen(false);
   };
@@ -56,7 +57,13 @@ export default function AddModelDialog(): JSX.Element {
     <div className="flex items-center justify-center">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogTrigger asChild>
-          <Button variant="default">新增模型</Button>
+          <Button
+            variant="secondary"
+            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+          >
+            <Upload className="w-5 h-5" />
+            新增模型
+          </Button>
         </DialogTrigger>
 
         <DialogContent className="sm:max-w-[425px]">
