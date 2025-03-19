@@ -57,17 +57,16 @@ export default function RootLayout({
                 <NotificationSettingsProvider>
                   <NotificationProvider>
                     <Toaster richColors />
-                    <div className="flex h-sreen w-full">
+                    <div className="flex h-screen w-full">
                       {/* Sidebar 固定左側 */}
                       <AppSidebar />
-                      <div className="flex flex-col flex-1">
-                        {/* Header 固定上方 */}
+                      {/* 右側區域：包含 Header 和 Main */}
+                      <div className="flex flex-col flex-1 min-w-0">
+                        {/* Header 固定於右側上方 */}
                         <Header />
-                        {/* 主要內容區域 */}
-                        <main className="flex-1 overflow-hidden">
-                          <div className="overflow-auto h-full p-4">
-                            {children}
-                          </div>
+                        {/* 主要內容區域：確保不會與 Header 重疊 */}
+                        <main className="flex-1 overflow-auto">
+                          {children}
                         </main>
                       </div>
                     </div>

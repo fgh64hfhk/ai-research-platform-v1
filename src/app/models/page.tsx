@@ -10,7 +10,7 @@ export default function ModelPage() {
   return (
     <ModelsProvider>
       {/* 標題 & 按鈕區塊 */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between min-w-[1100px] m-4">
         {/* 標題區塊 */}
         <div>
           <h1 className="text-3xl font-bold text-gray-800 dark:text-white">
@@ -21,7 +21,7 @@ export default function ModelPage() {
           </p>
         </div>
         {/* 右側按鈕區塊 */}
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           <AddModelDialog />
           <AddModelVersionDialog />
 
@@ -36,9 +36,10 @@ export default function ModelPage() {
         </div>
       </div>
 
-      <div className="grid w-full max-w-[1200px] py-3 px-3">
+      <div className="grid w-full max-w-[1200px] m-4">
         <ModelsTable />
       </div>
+
     </ModelsProvider>
   );
 }

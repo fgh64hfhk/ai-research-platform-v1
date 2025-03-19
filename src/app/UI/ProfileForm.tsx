@@ -38,6 +38,7 @@ export default function ProfileForm() {
     },
     shouldUseNativeValidation: false,
   });
+  
   function onSubmit(values: z.infer<typeof formSchema>) {
     alert(`Submitted Data:\n${JSON.stringify(values, null, 2)}`);
   }

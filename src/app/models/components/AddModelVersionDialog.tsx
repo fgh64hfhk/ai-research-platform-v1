@@ -118,6 +118,7 @@ export default function AddModelVersionDialog(): JSX.Element {
           <Button
             variant="secondary"
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+            disabled={currentEditModel ? false : true}
           >
             <Upload className="w-5 h-5" />
             新增模型版本

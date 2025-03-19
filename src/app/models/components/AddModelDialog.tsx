@@ -1,58 +1,41 @@
 "use client";
-import { JSX, useState } from "react";
+import { useState, useRef } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
   DialogClose,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 
-import { Model } from "../ModelsColumns";
-
-import { useModels } from "../ModelsProvider";
 import { Upload } from "lucide-react";
 
+import AddModelFormLogic from "./AddModelFormLogic";
+
 /**
- * AddModelDialog component displays a dialog form for adding a new model.
  *
- * The model data is stored in sessionStorage and triggers an event to notify other components.
- * @returns {JSX.Element} The dialog component for adding a new model.
+ * `AddModelDialog` 組件僅負責顯示新增模型的對話框
+ * 表單提交邏輯應交由 `AddModelForm.tsx` 處理。
+ * @returns 只包含視窗樣式的對話框
  */
 
-export default function AddModelDialog(): JSX.Element {
-  const [name, setName] = useState("");
-  const [language, setLanguage] = useState("");
-  const [description, setDescription] = useState("");
+export default function AddModelDialog() {
   const [isOpen, setIsOpen] = useState(false);
+  const formRef = useRef<{ submitForm: () => Promise<boolean> } | null>(null);
 
-  const { addTempModel } = useModels();
-
-  const handleSave = () => {
-    if (!name || !language) {
-      alert("請填寫完整的模型資訊！");
-      return;
+  const handleSubmit = async () => {
+    if (formRef.current) {
+      const isSuccess = await formRef.current.submitForm();
+      if (isSuccess) {
+        setIsOpen(false); // 提交成功後關閉對話框
+      }
     }
-    // 建立 Model 物件並存入 sessionStorage
-    const newModel: Model = {
-      id: crypto.randomUUID(), // 使用 UUID 產生唯一 ID
-      name,
-      language,
-      description,
-    };
-
-    addTempModel(newModel);
-
-    setIsOpen(false);
   };
+
   return (
     <div className="flex items-center justify-center">
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -66,7 +49,7 @@ export default function AddModelDialog(): JSX.Element {
           </Button>
         </DialogTrigger>
 
-        <DialogContent className="sm:max-w-[425px]">
+        <DialogContent className="sm:max-w-[425px] flex flex-col justify-between">
           <DialogHeader>
             <DialogTitle>新增模型</DialogTitle>
             <DialogDescription>
@@ -74,56 +57,17 @@ export default function AddModelDialog(): JSX.Element {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            {/* 模型名稱 */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="name" className="text-right">
-                模型名稱
-              </Label>
-              <Input
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="col-span-3"
-                placeholder="請輸入模型名稱"
-              />
-            </div>
+          {/* 只顯示 AddModelForm，不處理提交邏輯 */}
+          <AddModelFormLogic ref={formRef} />
 
-            {/* 開發語言 */}
-            <div className="grid grid-cols-4 items-center gap-4">
-              <Label htmlFor="language" className="text-right">
-                開發語言
-              </Label>
-              <Input
-                id="language"
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="col-span-3"
-                placeholder="例如 Python, Java, C++"
-              />
-            </div>
-
-            {/* 模型描述 */}
-            <div className="grid grid-cols-4 items-start gap-4">
-              <Label htmlFor="description" className="text-right">
-                描述
-              </Label>
-              <Textarea
-                id="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                className="col-span-3"
-                placeholder="簡單描述模型的用途"
-              />
-            </div>
-          </div>
-
-          <DialogFooter>
+          <div className="flex justify-end mt-4 space-x-2">
             <DialogClose asChild>
               <Button variant="outline">取消</Button>
             </DialogClose>
-            <Button onClick={handleSave}>新增</Button>
-          </DialogFooter>
+            <Button variant="secondary" onClick={handleSubmit}>
+              新增模型
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
