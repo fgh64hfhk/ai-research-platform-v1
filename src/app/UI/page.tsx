@@ -10,7 +10,6 @@ import DialogDemo from "./DialogDemo";
 import SonnerDemo from "./SonnerDemo";
 import SonnerToast from "./SonnerToast";
 
-
 export default function UIPage() {
     return (
         <div>

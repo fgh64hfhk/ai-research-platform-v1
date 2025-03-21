@@ -20,7 +20,7 @@ export function ModelsTable() {
   if (error) return <p className="text-center text-red-500">{error}</p>;
 
   return (
-    <div>
+    <div className="m-4">
       <button
         className="mb-4 px-4 py-2 bg-blue-500 text-white rounded"
         onClick={fetchModels}

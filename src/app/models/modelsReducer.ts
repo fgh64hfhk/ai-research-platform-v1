@@ -57,11 +57,6 @@ export function modelsReducer(
           buildDate: "",
         },
       };
-      sessionStorage.setItem("tempModel", JSON.stringify(tempModel));
-      console.log("已儲存模型至 sessionStorage:", tempModel);
-
-      // 手動觸發 CustomEvent，讓其他組件監聽
-      window.dispatchEvent(new Event("sessionStorageUpdated"));
 
       return {
         ...state,
@@ -71,8 +66,8 @@ export function modelsReducer(
     case "ADD_MODEL_FINAL":
       // 讓模型正式進入狀態管理，並移除 `sessionStorage`
       sessionStorage.removeItem("tempModel");
-      // 手動移除 event listener，確保 event 監聽器不會持續存在
-      window.removeEventListener("sessionStorageUpdated", () => {});
+      sessionStorage.removeItem("hasOpenedVersionDialog");
+      
       return {
         ...state,
         models: state.models.map((m) =>

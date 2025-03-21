@@ -277,6 +277,13 @@ export function ModelsProvider({ children }: { children: React.ReactNode }) {
   // 新增暫存模型
   const addTempModel = (model: Model) => {
     dispatch({ type: "ADD_MODEL_TEMP", payload: model });
+    sessionStorage.setItem("tempModel", JSON.stringify(model));
+    console.log("已儲存模型至 sessionStorage:", model);
+
+    sessionStorage.setItem("hasOpenedVersionDialog", "false");
+
+    // 手動觸發 CustomEvent，讓其他組件監聽
+    window.dispatchEvent(new Event("sessionStorageUpdated"));
   };
 
   // 新增完整模型

@@ -12,10 +12,11 @@ const AddModelFormLogic = forwardRef((_, ref) => {
   useImperativeHandle(ref, () => ({
     submitForm: async () => {
       try {
+        let success = false;
         await form.handleSubmit(async (data) => {
-          submitModel(data); // 確保 submitModel 正確執行
+          success = await submitModel(data); // 確保 submitModel 正確執行
         })();
-        return true; // 提交成功
+        return success; // 根據 submitModel 的結果回傳成功或失敗
       } catch (error) {
         console.error("提交失敗:", error);
         return false; // 提交失敗
