@@ -10,30 +10,37 @@ import DialogDemo from "./DialogDemo";
 import SonnerDemo from "./SonnerDemo";
 import SonnerToast from "./SonnerToast";
 
+import { AddScheduleLogic } from "../models/schedule/AddScheduleLogic";
+import { ScheduleProvider } from "../models/schedule/ScheduleContextProvider";
+
 export default function UIPage() {
-    return (
-        <div>
-            <IconTest />
-            <hr />
-            <ButtonTest />
-            <hr />
-            <CardTest />
-            <hr />
-            <CardWithNotification />
-            <hr />
-            <TableDemo />
-            <hr />
-            <ChartTest />
-            <hr />
-            <ChartDemo />
-            <hr />
-            <ProfileForm />
-            <hr />
-            <DialogDemo />
-            <hr />
-            <SonnerDemo />
-            <hr />
-            <SonnerToast />
-        </div>
-    )
+  return (
+    <div>
+      <ScheduleProvider>
+        <AddScheduleLogic />
+      </ScheduleProvider>
+      <hr />
+      <IconTest />
+      <hr />
+      <ButtonTest />
+      <hr />
+      <CardTest />
+      <hr />
+      <CardWithNotification />
+      <hr />
+      <TableDemo />
+      <hr />
+      <ChartTest />
+      <hr />
+      <ChartDemo />
+      <hr />
+      <ProfileForm />
+      <hr />
+      <DialogDemo />
+      <hr />
+      <SonnerDemo />
+      <hr />
+      <SonnerToast />
+    </div>
+  );
 }
