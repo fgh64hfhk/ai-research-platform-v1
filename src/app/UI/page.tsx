@@ -13,9 +13,12 @@ import SonnerToast from "./SonnerToast";
 import { AddScheduleLogic } from "../models/schedule/AddScheduleLogic";
 import { ScheduleProvider } from "../models/schedule/ScheduleContextProvider";
 
+import { Toaster } from "sonner";
+
 export default function UIPage() {
   return (
     <div>
+      <Toaster richColors closeButton />
       <ScheduleProvider>
         <AddScheduleLogic />
       </ScheduleProvider>

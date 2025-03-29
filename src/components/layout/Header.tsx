@@ -39,7 +39,7 @@ export function Header() {
   const { isPushEnabled, togglePushNotifications } = useNotificationSettings();
 
   return (
-    <header className="sticky w-full fixed top-0 right-0 left-64 z-10 bg-white dark:bg-gray-900 shadow-md h-16 px-6 flex items-center justify-between min-w-[calc(100%-16rem)] overflow-hidden">
+    <header className="sticky w-full top-0 right-0 left-64 z-10 bg-white dark:bg-gray-900 shadow-md h-16 px-6 flex items-center justify-between min-w-[calc(100%-16rem)] overflow-hidden">
       {/* 側邊欄按鈕 + 平台名稱 */}
       <div className="flex items-center gap-3">
         <SidebarTrigger />

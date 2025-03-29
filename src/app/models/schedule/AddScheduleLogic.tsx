@@ -14,10 +14,15 @@ export const AddScheduleLogic = () => {
   const { submitSchedule } = useScheduleSubmit();
 
   // 實作提交的邏輯
-  const handleSubmit = (value: ScheduleFormValues) => {
-    const result = submitSchedule(value);
-    console.log("✅ 排程已加入：", result);
-    setOpen(false); // 成功提交後關閉對話匡
+  const handleSubmit = async (values: ScheduleFormValues) => {
+    const result = await submitSchedule(values);
+
+    if (result.success) {
+      setOpen(false); // 成功提交後關閉對話匡
+      console.log("✅ 排程已加入：", result);
+    } else {
+      console.error("❌ 排程加入失敗：", result.error);
+    }
   };
 
   return (

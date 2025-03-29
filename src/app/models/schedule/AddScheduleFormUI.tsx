@@ -36,8 +36,8 @@ export const AddScheduleFormUI = ({ onSubmit }: AddScheduleFormUIProps) => {
   const form = useForm<ScheduleFormValues>({
     resolver: zodResolver(scheduleSchema),
     defaultValues: {
-      modelId: "",
-      version: "",
+      modelId: "Model_Test",
+      version: "v1.0",
       buildDate: "",
       runDate: "",
       triggerTraining: false,

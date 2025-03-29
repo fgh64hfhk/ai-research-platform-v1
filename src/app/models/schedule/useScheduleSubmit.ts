@@ -1,34 +1,73 @@
 import { useScheduleContext } from "./ScheduleContextProvider";
 import { ScheduleFormValues } from "./scheduleSchema";
-import { TrainingSchedule } from "./schedule";
 
-import { v4 as uuidv4 } from "uuid";
+import { createSchedule } from "./api/schedule";
+import { SchedulePayload, TrainingSchedule } from "./schedule";
+
+import { useState } from "react";
+import { useToastNotify } from "./useToastNotify";
+
+import { useRouter } from "next/navigation";
 
 export const useScheduleSubmit = () => {
   const { dispatch } = useScheduleContext();
+  const [loading, setLoading] = useState(false);
 
-  const submitSchedule = (data: ScheduleFormValues) => {
-    // 模擬 API 回傳的完整排程資料（包含 id 與 status）
-    const newSchedule: TrainingSchedule = {
-      id: uuidv4(),
-      modelId: data.modelId,
-      version: data.version,
-      buildDate: data.buildDate,
-      runDate: data.runDate,
-      status: "scheduled",
-    };
+  const { success: toastSuccess, error: toastError } = useToastNotify();
 
-    // 呼叫 reducer 新增排程
-    dispatch({
-      type: "ADD_SCHEDULE",
-      payload: newSchedule,
-    });
+  const router = useRouter();
 
-    // 後續可以回傳結果給外部呼叫者（例如讓對話匡關閉）
-    return newSchedule;
+  const submitSchedule = async (formData: ScheduleFormValues) => {
+    setLoading(true);
+
+    try {
+      // 1. 準備 payload 根據前端欄位結構轉換
+      const payload: SchedulePayload = {
+        modelId: formData.modelId,
+        version: formData.version,
+        buildDate: formData.buildDate,
+        runDate: formData.runDate,
+        triggerTraining: formData.triggerTraining ?? false,
+      };
+      // 2. 呼叫 mock API
+      const response = await createSchedule(payload);
+
+      // 3. 組合完整的排程資料，符合 TrainingSchedule 型別
+      const newSchedule: TrainingSchedule = {
+        id: response.id,
+        modelId: payload.modelId,
+        version: payload.version,
+        buildDate: payload.buildDate,
+        runDate: payload.runDate,
+        status: response.status,
+        createdAt: response.createdAt,
+      };
+
+      // 4. 觸發 dispatch 更新全域狀態
+      dispatch({
+        type: "ADD_SCHEDULE",
+        payload: newSchedule,
+      });
+
+      // ✅ 使用封裝的通知函式
+      toastSuccess("排程建立成功！", "查看任務", () =>
+        router.push(`/schedule/${newSchedule.id}`)
+      );
+
+      // 5. 可選：回傳結果給外部元件處理 例如：關閉對話匡以及顯示成功通知
+      return { success: true, data: newSchedule };
+    } catch (error: any) {
+      // ⚠️ 使用封裝的通知函式
+      toastError(error?.message || "排程建立失敗");
+
+      return { success: false, error: error?.message || "排程建立失敗" };
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
     submitSchedule,
+    loading,
   };
 };
