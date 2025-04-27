@@ -1,0 +1,490 @@
+commit 1f0c1607e6564f6b2b52ad75971e0be2f05821fa
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Mar 29 16:56:25 2025 +0800
+
+    feat: finished schedule page and components
+
+commit ba7be0272d301b61a4648482e0d576e2f10b09f9
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Mar 26 21:16:30 2025 +0800
+
+    feat(schedule): implement core scheduling system and form integration
+    
+    - Define schedule types (full data, payload, response, status)
+    - Create Zod schema for form validation with inferred TS types
+    - Add AddScheduleFormUI with RHF + DatePicker integration
+    - Add reusable BaseDialog with customizable footer slot
+    - Implement scheduleReducer and initial state
+    - Create ScheduleContextProvider with useReducer
+    - Build useScheduleSubmit hook with dispatch logic
+    - Integrate all components into AddScheduleLogic
+    
+    Future: toast notifications, API integration, job status updates
+
+commit 23cf3d7c1be80b8da6467d670998315379e55e23
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Mar 21 17:30:16 2025 +0800
+
+    Refactor layout and state logic for model management, implement model version creation workflow
+    
+    - Adjusted layout of model management page for clearer max-width and spacing
+    - Enabled horizontal scrolling for data tables with overflowing content
+    - Refactored reducer to remove side-effects and focus solely on state updates
+    - Moved side-effects and DOM interactions from provider methods to top-level managing component
+    - Added type definitions for model parameters and established data relationships between model summary, version, and parameters for database storage
+    - Created model version validation schema using Zod, integrated with react-hook-form
+    - Implemented model version submit logic: validates input, retrieves cached model from sessionStorage, and coordinates full data transmission and state update
+    - Added ModelParamAccordion component: binds individual parameter fields to form context with validation and control
+    - Created reusable DialogComponent: accepts submit logic and controlled open state via props, uses useCallback to prevent re-renders
+    - Introduced AddModelVersionLogic component: parent controller for form and dialog, handles form init, open state, and sessionStorage event handling
+    - Added UI component for model version form: binds each field to react-hook-form, integrates accordion section for parameters
+
+commit 8f74516179da4ab34d2d8873663241664ac7c727
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Mar 19 23:44:59 2025 +0800
+
+    Refactor model creation components, layout adjustments, and form submission handling
+    
+    - Split the model creation modal into separate components: form logic, UI, validation, submission, and drag-and-drop file handling.
+    - Adjust the root layout to optimize the positioning of the sidebar, header, and main content.
+    - Update the model page layout, refining the structure of the title, button group, and table section.
+    - Implement forwardRef and useImperativeHandle to allow the modal component to pass refs to child components, enabling form submission handling and automatically closing the modal on success.
+
+commit ae69c6e4a8cb662204f44b71d6115c914b7ad12d
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Mar 17 17:57:56 2025 +0800
+
+    Enhance reducer and session storage integration, optimize UI state synchronization
+    
+    - Expanded reducer to handle adding models and versions with structured actions
+    - Integrated session storage with reducer to ensure state consistency
+    - Refactored manual event listeners into the reducer to automatically open the add version dialog
+    - Tested user workflows to ensure real-time UI and state preview
+    - Optimized session storage behavior to overwrite old data when adding new models
+    - Ensured AddModelVersionDialog only opens when currentEditModel is available
+    - Adjusted parent component layout using grid division to prevent horizontal overflow
+    - Updated global state with model version numbers upon adding a complete model, ensuring proper rendering
+    - Implemented a timer in AddModelVersionDialog to delay state updates until the effect phase, avoiding immediate state modification during render and ensuring proper re-rendering upon event changes
+
+commit 11aad4d088227a88f5132222935f66415ff35845
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 16 17:52:53 2025 +0800
+
+    Add model and version dialogs, integrate session storage, and enhance UI with enum-based select component
+    
+    - Implement AddModelDialog for adding new models
+    - Implement AddModelVersionDialog for managing model versions
+    - Use sessionStorage to enable communication between dialogs
+    - Add a custom event listener to ensure sessionStorage updates trigger version dialog
+    - Define ModelStatus enum in ModelsColumns.tsx and apply it to status selection
+    - Replace native select with shadcn/ui Select component for better UI consistency
+    - Update page.tsx to include AddModelDialog and AddModelVersionDialog components
+
+commit 5815a5d261f6046ae2a42b2e9a695fec81c1b805
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 16 16:18:29 2025 +0800
+
+    Enhance model management UI, optimize utility functions, and improve global state management
+    
+    - Add configuration for the model management page, including title and add button
+    - Optimize utility function to make querying model versions more intuitive
+    - Fix string formatting for hidden column dropdown menu
+    - Refactor global state manager and rename reducer's default state variables for better clarity
+
+commit 2171a21bddc2ac32c6b37ead35c2d12be3f9a3a6
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Mar 14 17:19:24 2025 +0800
+
+    feat: Enhance table component and model management details
+    
+    - Add a selection column
+    - Implement details for model name and programming language fields
+    - Format modification date and creation date
+    - Add an action column
+    - Fix global data date formatting
+    - Implement badge for model status
+    - Enhance reusable table component with:
+      - Sorting, filtering, and column hiding
+      - Row selection and pagination settings
+      - Action and display area improvements
+
+commit d8e0753d8cb70357c11e5a3789b5a6acccf193e9
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Mar 12 20:33:09 2025 +0800
+
+    feat: Implement model version selector and optimize state management
+    
+    - Implement reusable column header component for TanStack Table.
+    - Add three utility functions to retrieve model version data and version numbers.
+    - Create model columns component and integrate ModelVersionSelector.
+    - Move ModelVersionSelector state management to global provider and context.
+    - Fix reducer logic for switching version numbers and updating state.
+    - Optimize mock API integration to reduce server load and improve updates.
+    - Enhance ModelVersionSelector with optimized rendering and version sorting.
+    - Ensure column component implementation aligns with data type definitions.
+    - Implement React.memo with deep comparison to optimize re-renders and tested.
+    
+    Successfully integrated TanStack Table, provider/context, reducer, and mock API.
+
+commit b84813525c320a7efbd3b904c164b722c1afcca9
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Mar 11 13:35:55 2025 +0800
+
+    feat: extract createColumns for reusable table column definitions
+    feat: encapsulate DataTable with UI integration and tanstack-table
+    feat: define Model & ModelVersion types, create ModelWithLatestVersion
+    feat: implement ModelsProvider for global state management and latest version filtering
+    feat: use useReducer to manage CRUD operations for models
+    feat: create ModelsTable using ModelWithLatestVersion, add CRUD buttons
+    feat: add models/page.tsx using Next.js App Router for table rendering
+    feat: optimize table rendering with React.memo and getRowId to minimize re-renders
+
+commit c5a7401ab0faf6081a4b190388586dd5e56f6bbd
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 9 15:12:19 2025 +0800
+
+    feat: Implement model management delete & edit logic using useReducer - Added frontend logic for deleting and editing models in the management interface.
+    - Integrated useReducer to handle state updates efficiently.
+    - Improved state management to ensure better performance and maintainability.
+
+commit 6b227114c4082461b517d5c56aabed2a37200adf
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 9 14:16:06 2025 +0800
+
+    feat: add model version data table
+
+commit 30b2c65ccc813a26686adc22644776f4e9feacc1
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 9 11:07:28 2025 +0800
+
+    fixed: fixed selected version value not display issue
+
+commit 6a0bb44589f8f956a9a44e0f6bad2e3c8d360558
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Mar 8 21:55:18 2025 +0800
+
+    feat: Add dynamic version dropdown rendering in model table
+    fix: Resolve filtering issue in model table
+    fix: Fix sorting issue in model table
+
+commit ea4e70734df6a5bd80cdb659c9c092fc05c49314
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Mar 7 22:20:54 2025 +0800
+
+    feat: Add model version table and enhance reusable DataTable component
+    
+    - Define table headers for model versions
+    - Make DataTable component reusable for different data tables
+    - Add model version component to the model management page and complete testing
+
+commit 087e1efc12b8d6e57bd7bb79fb81df9383ca4821
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Mar 7 18:14:11 2025 +0800
+
+    feat: Custom data table for model training management
+    
+    - Implemented a customized data table to manage model training records
+    - Integrated filtering, sorting, pagination, and column visibility control
+    - Enhanced UI with proper spacing, alignment, and styling
+    
+    fix: Refined details and formatted data
+    
+    - Fixed status and date formatting issues for better readability
+    - Adjusted dropdown menu positioning and improved column name formatting
+    - Standardized input styling for consistency
+
+commit 92d07cde460e5b465d0f13088b79ab1c7419a076
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Mar 7 15:16:09 2025 +0800
+
+    feat(layout): add root layout component with conditional rendering
+    
+    - Added root layout component that determines if the current page is the homepage; otherwise, it applies the app-specific sidebar, header, and footer.
+    
+    fix(dashboard): correct header component import path
+    
+    fix(cpu-usage): resolve line chart alignment issue
+
+commit d116042d1645e7bcece17538a81ac1034c72cdaa
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Mar 6 21:30:45 2025 +0800
+
+    feat: integrate MDX, initialize model training page, and implement SSR for posts
+    
+    - Integrated MDX with the homepage layout and dialog for dynamic content rendering
+    - Initialized model training layout and corresponding page structure
+    - Implemented MDX support in , integrating with
+    - Added SSR () for  to enable server-side rendering
+    - Created  directory with Markdown files for server-side rendering
+    - Configured global layout and initialized core UI components
+
+commit a26531b761af09f37520ebd4efdde81dff2e7d08
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Mar 5 20:05:57 2025 +0800
+
+    feat: design user profile card in header with dropdown improvements
+    
+    - Added user profile card with avatar, name, and role
+    - Implemented green ring around avatar to indicate online status
+    - Used Tooltip to display last login time for better UX
+    - Centered and bolded dropdown menu items for better readability
+    - Styled logout button to have a red background on hover
+    - Adjusted dropdown menu position to avoid sticking too close to the trigger
+
+commit a25a094104bb773f41dffe4e69ecb068f759838c
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Mar 5 15:31:20 2025 +0800
+
+    feat: integrate push notification toggle & optimize GPU usage UI layout
+
+commit 2adf3851b416cae9855811d784f3edb5398152f5
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Mar 5 11:39:37 2025 +0800
+
+    feat: add notification item with smooth remove animation
+
+commit bd509df4b00441cba9819c4f7656d1920475f077
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Mar 4 18:51:06 2025 +0800
+
+    feat: implement notification system with GPU overload detection
+    
+    Added Sonner-based toast notifications with context-based state management.
+    
+    Implemented notification card UI to display stored notifications.
+    
+    Integrated GPU usage monitoring to trigger notifications when overload is detected.
+
+commit 311789770a2b17ef7498b98955307c244ede0624
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Mar 4 16:25:44 2025 +0800
+
+    Integrated Sonner Toast UI with notification state management for tracking alerts.
+
+commit 4e1ebc660873e8e27bb568b29dc37d4739cc7e55
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Mar 4 16:23:27 2025 +0800
+
+    feat: integrate toast UI with notification storage
+    
+    Added functionality to record notifications when toast messages are triggered.
+
+commit 94c8af1e8fb03d7af53c59a0e1276cc2cf19ee58
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Mar 4 15:13:11 2025 +0800
+
+    feat: implement SonnerToast with customizable notifications
+    
+    Added support for success, error, warning, and info toasts with optional actions. Improved UI with dark mode, animation, and position customization.
+
+commit 8a6a7a5352860e17a15cf727a8283ec77eb5fc39
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Tue Mar 4 11:57:24 2025 +0800
+
+    feat: complete GPU Usage component with data display and Doughnut chart
+    
+    Optimized layout: aligned data display and chart side by side, improved readability, and added dark mode support
+
+commit 8cc38b6eeed2b7861bded44a7a3c0ef9c49e9e80
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Mar 3 18:09:45 2025 +0800
+
+    feat: implement TrainingRecordTable component for displaying training records
+
+commit dc36625eb4e4a80e552fac4a8701c5bd95b2ef96
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Mar 3 15:48:35 2025 +0800
+
+    Fixed: fix slider step calculation and optimize F1-score filtering logic
+
+commit ad7007ef6e6efc1be8f1d58ce77280204791b1ee
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Mar 3 14:06:50 2025 +0800
+
+    feat: Optimize dynamic range calculation for RadarChart and improve tick interval handling
+
+commit d78ba45fd2f5991bfd8b863b3b14eb56c1bcc013
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Mon Mar 3 09:22:44 2025 +0800
+
+    Adjust Y-axis range for better accuracy trend visibility
+
+commit 2cfd6994e742e2385064ce22f859fd9e3d0fa298
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 2 19:51:31 2025 +0800
+
+    Fix: Resolve type errors and ensure stable data indexing in PredictionPieChart
+    
+    - Fixed TypeScript indexing issue for modelData by adding proper type assertions
+    - Ensured pieData is safely initialized to prevent undefined errors
+    - Adjusted active selection logic to avoid potential index out-of-bounds issues
+    - Improved error breakdown calculations for more accurate failure categorization
+    - Refactored activeShape to ensure proper segment highlighting without crashes
+
+commit 833ed8cf361037dbff1919f9dc7dfbbaaf98a1f8
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 2 18:48:38 2025 +0800
+
+    Fix: Adjust Header component layout and styling for better stability
+    
+    - Replaced incorrect 'stick' class with 'sticky' to properly fix Header at the top
+    - Ensured Header has a proper background color in both light and dark modes
+    - Added shadow for better UI layering
+    - Improved flexbox alignment to ensure consistent spacing and positioning
+    - Ensured Sidebar, Header, and Main layout remain unaffected by nested styles
+
+commit 0bc1af959a9e86cf91d8d934f9782cf91237e258
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 2 15:13:57 2025 +0800
+
+    feat: add sector overlay for detailed error classification in pie chart
+
+commit 828bbcf8d58ba59ecfa948ed78a2d44cd1bd48e1
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sun Mar 2 11:20:27 2025 +0800
+
+    feat: add pie chart for correct and incorrect predictions
+
+commit 7000bea4eea99ab4b296cae3960f9ef22b4f2666
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Mar 1 12:30:30 2025 +0800
+
+    feat: Add LossChart component to Dashboard for training loss visualization
+
+commit 969c88256c811da0a61745e27b3f54f3fa874c96
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Sat Mar 1 11:08:38 2025 +0800
+
+    feat: Implement responsive dashboard header with sidebar trigger and user menu
+
+commit 52202143dbf602278a6b5311630f4c13cc1a8303
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Feb 28 22:57:18 2025 +0800
+
+    Optimize Header component: modularize UserMenu and NotificationPopover, improved UI/UX
+
+commit ac07b81638ee9a9fdbbf7ca64b1c26462a869656
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Feb 28 18:31:04 2025 +0800
+
+    fix: resolve hydration mismatch issue caused by theme toggle
+
+commit f665d843035b00a5be5841c45e810d28477737ec
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Feb 28 18:27:25 2025 +0800
+
+    feat: add dark mode toggle with theme persistence
+
+commit 92065abcf541d69638f6754083f413505b78b5cf
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Feb 28 12:08:38 2025 +0800
+
+    fix: ensure toast type is defined and prevent undefined index errors
+
+commit f01b5205bdafcb73d904e7956a98e0f6357c7c76
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Fri Feb 28 12:05:45 2025 +0800
+
+    feat: implement custom toast notification system with Sonner
+
+commit 2db9e27b1c8fb31f6e0e570b477f75f8ed933702
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 20:22:26 2025 +0800
+
+    feat: optimize Dialog layout by aligning title and button
+
+commit 11379e2c1e14f8742a6a63b17a08ab8620f25714
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 15:23:09 2025 +0800
+
+    feat: optimize file upload progress simulation
+
+commit 48c793fd969a6d38454a2e9c16b4a3423fa3bddd
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 13:43:36 2025 +0800
+
+    feat: add row selection and status badges to data table
+
+commit c325239e8fc9f248993d68b8dd671f14cf692d0f
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 13:30:35 2025 +0800
+
+    feat: implement and test row selection checkbox in data table
+
+commit 7a0086f6beeeefcf1bc71d08be3f58f097d8f576
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 11:41:00 2025 +0800
+
+    feat: implement and test column visibility toggle in data table
+
+commit 9f613bc9f1fb80f6517f67275524f8b2e1cc3e4a
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 11:17:52 2025 +0800
+
+    feat: add filtering functionlity to data table
+
+commit d863f1944a62b5365451593ab2d54ce8e9c01165
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 11:04:18 2025 +0800
+
+    feat: implement and test pagination for data table
+
+commit 2ec609887944fb3a93516bf6c3ff7df53e8b1ada
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Thu Feb 27 09:27:09 2025 +0800
+
+    feat: implement and test basic data table with sample payments
+
+commit ff6ef8a40f26aa196be199f59ed2c488d449698f
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 17:30:49 2025 +0800
+
+    feat: implement form validation and alert JSON submiision
+
+commit 58b0c03cb3866587dd36d6414e80af8c11d66125
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 16:40:04 2025 +0800
+
+    feat: adjust chart UI layout and centering
+
+commit 4a836c5f09f8ea280cff6ce142f61d152b7e0c62
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 15:56:38 2025 +0800
+
+    fix: center table UI and set fixed width; test Recharts integration
+
+commit 7192e6a97bdb7a13f9e707202c754ead38246f42
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 15:27:10 2025 +0800
+
+    feat: implement Table UI demo with ShadCN
+
+commit 27b0d2a4778252e18caf446306c86d7ca910a92c
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 13:01:33 2025 +0800
+
+    feat: add and test ShadCN card, input, and label components
+
+commit e64c1ce443bc838936afe7d417ac28edb5f7b578
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 09:45:15 2025 +0800
+
+    feat: add and test ShadCN button component
+
+commit 6d3ce88c7138157eee422e54a0cd73d820fdcbcd
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 09:28:52 2025 +0800
+
+    chore: install lucide-react for icons
+
+commit b4eeec97cefc78554611db5426a18a478479512d
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 09:18:33 2025 +0800
+
+    chore: initialize Next.js project with Tailwind CSS and ShadCN setup
+
+commit af87b1dce924a83156bd9fe086364f2ad4dd83cc
+Author: Tony Lin <bear200806@gmail.com>
+Date:   Wed Feb 26 09:04:03 2025 +0800
+
+    Initial commit from Create Next App
