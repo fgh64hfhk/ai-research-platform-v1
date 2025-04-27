@@ -1,36 +1,76 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI Research Platform - First Version
 
-## Getting Started
+This is the **first version** of the AI Research Platform project, covering the initial implementation of core functionalities including model management, version control, scheduling, and training result visualization.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## 📚 Project Structure
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- **Frontend Framework**: Next.js 14
+- **Styling**: Tailwind CSS, shadcn/ui
+- **Chart Libraries**: Recharts
+- **State Management**: React Context + useReducer
+- **Form Handling**: react-hook-form + zod
+- **Notification System**: Sonner Toast
+- **Database Integration**: (Planned, API mock at this stage)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## ✨ Key Features (v1.0.0)
 
-## Learn More
+### 1. Dashboard
+- Responsive layout with Sidebar, Header, and Notification System.
+- Real-time GPU usage and model training status monitoring.
+- Training record table with advanced filtering and pagination.
 
-To learn more about Next.js, take a look at the following resources:
+### 2. Model Management
+- CRUD operations for models and versions.
+- ModelVersionSelector for managing model iterations.
+- Form validation with dynamic parameter accordion.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### 3. Schedule Management
+- Core scheduling system for model training.
+- Form-based schedule creation with Zod validation.
+- Integrated context and reducer for scheduling state.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 4. Notifications
+- Toast notification system for system alerts.
+- Context-managed notification center with list and removal animations.
 
-## Deploy on Vercel
+### 5. Visualization
+- Loss Chart, Accuracy Radar Chart, and Prediction Pie Charts.
+- Dynamic sector overlays for error classification.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 6. UI/UX Enhancements
+- Theme toggle (Light/Dark Mode with persistence).
+- Full mobile responsiveness and performance optimizations.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## 🚀 Development Timeline
+
+| Stage | Description | Timeframe |
+|:---|:---|:---|
+| Initialization | Project setup with Next.js, Tailwind, shadcn/ui | Feb 26 |
+| Data Table System | Table CRUD base functions | Feb 27–28 |
+| Dashboard Core | Header, Sidebar, Notification Center | Mar 1–3 |
+| Visualization Charts | Loss/Accuracy/Pie charts | Mar 2–3 |
+| Model Management | CRUD models and versions | Mar 4–20 |
+| Schedule Management | Create and manage training schedules | Mar 20–29 |
+
+---
+
+## 📈 Future Plans
+
+- 🔜 Integrate Firebase Firestore database backend
+- 🔜 Implement real training job triggering API
+- 🔜 Improve error analysis dashboards
+- 🔜 Develop v2.0 with complete model lifecycle management
+
+---
+
+## 📎 Project Status
+
+> **v1.0.0 First version completed and archived. Future updates will continue in a new branch or project.**
+
+---
